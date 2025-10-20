@@ -1,0 +1,97 @@
+<ion-content [fullscreen]="true" class="ion-padding">
+  <div class="login-container">
+    <ion-card>
+      <ion-card-header>
+        <ion-card-title class="ion-text-center">
+          <ion-icon name="lock-closed-outline" size="large"></ion-icon>
+          <h1>Welcome Back</h1>
+        </ion-card-title>
+        <ion-card-subtitle class="ion-text-center">
+          Sign in to your account
+        </ion-card-subtitle>
+      </ion-card-header>
+
+      <ion-card-content>
+        <form [formGroup]="loginForm" (ngSubmit)="onSubmit()">
+          <!-- Email/Username Input -->
+          <ion-item [class.ion-invalid]="isFieldInvalid('email')" lines="full">
+            <ion-label position="floating">Email or Username</ion-label>
+            <ion-input
+              type="text"
+              formControlName="email"
+              autocomplete="email"
+              [clearInput]="true"
+              (ionFocus)="onInputFocus($event)"
+              (ionBlur)="onInputBlur($event)"
+            ></ion-input>
+            <ion-note
+              slot="error"
+              *ngIf="loginForm.get('email')?.hasError('required')"
+            >
+              Email or username is required
+            </ion-note>
+          </ion-item>
+
+          <!-- Password Input -->
+          <ion-item
+            [class.ion-invalid]="isFieldInvalid('password')"
+            lines="full"
+          >
+            <ion-label position="floating">Password</ion-label>
+            <ion-input
+              [type]="showPassword ? 'text' : 'password'"
+              formControlName="password"
+              autocomplete="current-password"
+              (ionFocus)="onInputFocus($event)"
+              (ionBlur)="onInputBlur($event)"
+            ></ion-input>
+            <ion-icon
+              slot="end"
+              [name]="showPassword ? 'eye-off-outline' : 'eye-outline'"
+              (click)="togglePasswordVisibility()"
+              class="password-toggle-icon"
+            ></ion-icon>
+            <ion-note
+              slot="error"
+              *ngIf="loginForm.get('password')?.hasError('required')"
+            >
+              Password is required
+            </ion-note>
+            <ion-note
+              slot="error"
+              *ngIf="loginForm.get('password')?.hasError('minlength')"
+            >
+              Password must be at least 6 characters
+            </ion-note>
+          </ion-item>
+
+          <!-- Error Alert -->
+          <ion-item lines="none" *ngIf="authFacade.error()">
+            <ion-label class="ion-text-wrap">
+              <ion-text color="danger">
+                <p class="error-message">
+                  <ion-icon name="alert-circle-outline"></ion-icon>
+                  <span>{{ authFacade.error() }}</span>
+                </p>
+              </ion-text>
+            </ion-label>
+          </ion-item>
+
+          <!-- Submit Button -->
+          <ion-button
+            expand="block"
+            type="submit"
+            [disabled]="loginForm.invalid || authFacade.loading()"
+            class="ion-margin-top submit-button"
+          >
+            <ion-spinner
+              name="crescent"
+              *ngIf="authFacade.loading()"
+            ></ion-spinner>
+            <span *ngIf="!authFacade.loading()">Sign In</span>
+          </ion-button>
+        </form>
+      </ion-card-content>
+    </ion-card>
+  </div>
+</ion-content>

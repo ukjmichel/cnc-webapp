@@ -1,0 +1,7 @@
+{
+  "name": "cnc-webapp",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular"
+}

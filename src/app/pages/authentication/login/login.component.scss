@@ -1,0 +1,333 @@
+:host {
+  --card-max-width: 450px;
+  --card-border-radius: 16px;
+  --input-spacing: 16px;
+  --button-height: 48px;
+}
+
+ion-content {
+  --background: linear-gradient(
+    135deg,
+    var(--ion-color-primary-tint) 0%,
+    var(--ion-color-secondary-tint) 100%
+  );
+}
+
+.login-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100%;
+  padding: 20px;
+
+  ion-card {
+    max-width: var(--card-max-width);
+    width: 100%;
+    margin: 0;
+    border-radius: var(--card-border-radius);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    background: var(--ion-color-light);
+
+    ion-card-header {
+      padding: 32px 24px 24px;
+
+      ion-card-title {
+        margin-bottom: 8px;
+
+        ion-icon {
+          display: block;
+          margin: 0 auto 16px;
+          color: var(--ion-color-primary);
+        }
+
+        h1 {
+          margin: 0;
+          font-size: 28px;
+          font-weight: 700;
+          color: var(--ion-color-dark);
+        }
+      }
+
+      ion-card-subtitle {
+        font-size: 15px;
+        color: var(--ion-color-medium);
+        margin-top: 4px;
+      }
+    }
+
+    ion-card-content {
+      padding: 24px;
+      padding-top: 0;
+    }
+  }
+}
+
+// Form styling
+form {
+  ion-item {
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    --background: transparent;
+    --border-color: var(--ion-color-light-shade);
+    --border-width: 1px;
+    margin-bottom: var(--input-spacing);
+    margin-top: 12px;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    position: relative;
+    min-height: 56px;
+    overflow: visible !important;
+    border: 1px solid var(--ion-color-light-shade);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+
+    &.ion-invalid.ion-touched {
+      --border-color: var(--ion-color-danger);
+      --highlight-color-focused: var(--ion-color-danger);
+      border-color: var(--ion-color-danger);
+      box-shadow: 0 2px 8px rgba(var(--ion-color-danger-rgb), 0.2);
+    }
+
+    &.ion-focused {
+      box-shadow: 0 0 0 3px rgba(var(--ion-color-primary-rgb), 0.1),
+                  0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    ion-label {
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--ion-color-medium);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transform-origin: left center;
+      position: absolute !important;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%) !important;
+      background: transparent;
+      padding: 0 4px;
+      pointer-events: none;
+      z-index: 2;
+      margin: 0 !important;
+      white-space: nowrap;
+    }
+
+    // Float label to top on focus or when has value
+    &.ion-focused ion-label,
+    &.item-has-focus ion-label,
+    &.item-has-value ion-label,
+    &.item-has-focus.item-has-value ion-label {
+      top: 0 !important;
+      transform: translateY(-50%) scale(0.85) !important;
+      background: var(--ion-color-light);
+      color: var(--ion-color-medium);
+      font-weight: 500;
+      left: 8px;
+    }
+
+    &.ion-focused ion-label,
+    &.item-has-focus ion-label {
+      color: var(--ion-color-primary);
+    }
+
+    ion-input {
+      --padding-start: 12px;
+      --padding-end: 12px;
+      --padding-top: 12px;
+      --padding-bottom: 12px;
+      font-size: 15px;
+      min-height: 56px;
+    }
+
+    ion-note {
+      padding: 4px 12px;
+      font-size: 13px;
+      margin-top: 4px;
+    }
+  }
+
+  // Password toggle icon styling
+  .password-toggle-icon {
+    color: var(--ion-color-medium);
+    font-size: 22px;
+    cursor: pointer;
+    padding: 8px;
+    margin: 0 4px 0 0;
+    align-self: flex-end;
+    margin-bottom: 10px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--ion-color-primary);
+    }
+
+    &:active {
+      transform: scale(0.95);
+    }
+  }
+
+  // Error message styling
+  .error-message {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px;
+    background: rgba(var(--ion-color-danger-rgb), 0.1);
+    border-radius: 8px;
+    margin: 16px 0;
+
+    ion-icon {
+      flex-shrink: 0;
+      font-size: 20px;
+    }
+
+    span {
+      flex: 1;
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+
+  // Submit button
+  .submit-button {
+    --border-radius: 12px;
+    height: var(--button-height);
+    font-weight: 600;
+    font-size: 16px;
+    margin-top: 24px;
+    text-transform: none;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+
+    &:not([disabled]) {
+      --background: linear-gradient(
+        135deg,
+        var(--ion-color-primary) 0%,
+        var(--ion-color-primary-shade) 100%
+      );
+      --box-shadow: 0 4px 12px rgba(var(--ion-color-primary-rgb), 0.4);
+
+      &:hover {
+        --box-shadow: 0 6px 16px rgba(var(--ion-color-primary-rgb), 0.5);
+        transform: translateY(-2px);
+      }
+
+      &:active {
+        transform: translateY(0);
+      }
+    }
+
+    &[disabled] {
+      --opacity: 0.6;
+    }
+
+    ion-spinner {
+      margin-right: 8px;
+    }
+  }
+
+  // Forgot password link
+  > div:has(ion-button[routerLink="/auth/forgot-password"]) {
+    margin-top: 16px;
+
+    ion-button {
+      font-size: 14px;
+      text-transform: none;
+      --color: var(--ion-color-medium);
+
+      &:hover {
+        --color: var(--ion-color-primary);
+        text-decoration: underline;
+      }
+    }
+  }
+
+  // Register link
+  .register-link {
+    --background: transparent;
+    --padding-start: 0;
+    --inner-padding-end: 0;
+    margin-top: 24px;
+    border-top: 1px solid var(--ion-color-light-shade);
+    padding-top: 24px;
+
+    ion-label {
+      font-size: 14px;
+      color: var(--ion-color-medium);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+
+      ion-button {
+        font-weight: 600;
+        font-size: 14px;
+        text-transform: none;
+        --color: var(--ion-color-primary);
+        --padding-start: 4px;
+        --padding-end: 4px;
+        margin: 0;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+// Responsive design
+@media (max-width: 576px) {
+  .login-container {
+    padding: 16px;
+
+    ion-card {
+      box-shadow: none;
+
+      ion-card-header {
+        padding: 24px 20px 20px;
+
+        ion-card-title {
+          h1 {
+            font-size: 24px;
+          }
+        }
+      }
+
+      ion-card-content {
+        padding: 20px;
+      }
+    }
+  }
+
+  form {
+    .submit-button {
+      height: 44px;
+      font-size: 15px;
+    }
+
+    .password-toggle-icon {
+      font-size: 20px;
+      padding: 6px;
+    }
+  }
+}
+
+// Animation for error messages
+@keyframes slideInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.error-message {
+  animation: slideInDown 0.3s ease;
+}
+
+// Loading state
+ion-spinner {
+  --color: var(--ion-color-light);
+}
