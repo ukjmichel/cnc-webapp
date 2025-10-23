@@ -15,18 +15,22 @@ const routes: Routes = [
           ),
       },
       {
-        path: 'tab2',
+        path: 'shopping-list',
         loadChildren: () =>
-          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
+          import('../shopping-list/shopping-list-routing.module').then(
+            (m) => m.ShoppingListPageRoutingModule
+          ),
       },
       {
-        path: 'tab3',
+        path: 'products',
         loadChildren: () =>
-          import('../tab3/tab3.module').then((m) => m.Tab3PageModule),
+          import('../products/products-routing.module').then(
+            (m) => m.ProductsPageRoutingModule
+          ),
       },
       {
         path: '',
-        redirectTo: 'home', 
+        redirectTo: 'home',
         pathMatch: 'full',
       },
     ],

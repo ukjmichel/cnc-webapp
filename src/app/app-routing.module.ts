@@ -9,13 +9,27 @@ const routes: Routes = [
       import('./pages/tabs/tabs-routing.module').then(
         (m) => m.TabsPageRoutingModule
       ),
-    canActivate: [authGuard], // Protect all tabs with auth guard
+    //canActivate: [authGuard], // Protect all tabs with auth guard
   },
   {
     path: 'auth',
     loadChildren: () =>
       import('./pages/authentication/authentication-routing.module').then(
         (m) => m.AuthenticationRoutingModule
+      ),
+  },
+  {
+    path: 'shopping-list',
+    loadChildren: () =>
+      import('./pages/shopping-list/shopping-list-routing.module').then(
+        (m) => m.ShoppingListPageRoutingModule
+      ),
+  },
+  {
+    path: 'products',
+    loadChildren: () =>
+      import('./pages/products/products-routing.module').then(
+        (m) => m.ProductsPageRoutingModule
       ),
   },
 ];

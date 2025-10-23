@@ -1,0 +1,143 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>Products</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="createNewProduct()">
+        <ion-icon name="add" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="product-page">
+    
+    <!-- Search and Filter Bar -->
+    <div class="search-container">
+      <ion-searchbar
+        [(ngModel)]="searchQuery"
+        (ionChange)="onSearch()"
+        placeholder="Search products..."
+        debounce="500"
+      ></ion-searchbar>
+      
+      <div class="filter-controls">
+        <ion-select
+          [(ngModel)]="sortBy"
+          (ionChange)="onSortChange()"
+          placeholder="Sort by"
+          interface="popover"
+        >
+          <ion-select-option value="updatedAt">Updated</ion-select-option>
+          <ion-select-option value="createdAt">Created</ion-select-option>
+          <ion-select-option value="productName">Name</ion-select-option>
+          <ion-select-option value="productCode">Code</ion-select-option>
+          <ion-select-option value="brands">Brand</ion-select-option>
+        </ion-select>
+        
+        <ion-button
+          fill="clear"
+          (click)="sortDirection.set(sortDirection() === 'ASC' ? 'DESC' : 'ASC'); onSortChange()"
+        >
+          <ion-icon 
+            [name]="sortDirection() === 'ASC' ? 'arrow-up' : 'arrow-down'"
+            slot="icon-only"
+          ></ion-icon>
+        </ion-button>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-bar">
+      <ion-chip color="primary">
+        <ion-label>Total: {{ totalItems() }}</ion-label>
+      </ion-chip>
+    </div>
+
+    <!-- Error Message -->
+    <ion-card *ngIf="error()" color="danger">
+      <ion-card-content>
+        {{ error() }}
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <ion-spinner name="crescent"></ion-spinner>
+      <p>Loading products...</p>
+    </div>
+
+    <!-- Products List -->
+    <ion-list *ngIf="!isLoading() && hasProducts()">
+      <ion-item
+        *ngFor="let product of products()"
+        button
+        (click)="viewProduct(product.productId)"
+        detail="true"
+      >
+        <ion-label>
+          <h2>{{ product.productName }}</h2>
+          <p *ngIf="product.brands">{{ product.brands }}</p>
+          <p class="product-details">
+            <span *ngIf="product.productCode">Code: {{ product.productCode }}</span>
+            <span *ngIf="product.quantity"> • {{ formatQuantity(product) }}</span>
+          </p>
+        </ion-label>
+        
+        <ion-buttons slot="end">
+          <ion-button
+            fill="clear"
+            color="primary"
+            (click)="editProduct(product.productId, $event)"
+          >
+            <ion-icon name="create-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+          <ion-button
+            fill="clear"
+            color="danger"
+            (click)="deleteProduct(product.productId, $event)"
+          >
+            <ion-icon name="trash-outline" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-buttons>
+      </ion-item>
+    </ion-list>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading() && !hasProducts()">
+      <ion-icon name="cube-outline" class="empty-icon"></ion-icon>
+      <h2>No Products Found</h2>
+      <p *ngIf="searchQuery()">Try adjusting your search criteria</p>
+      <p *ngIf="!searchQuery()">Add your first product to get started!</p>
+      <ion-button (click)="createNewProduct()">
+        Add Product
+      </ion-button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!isLoading() && hasProducts() && totalPages() > 1">
+      <ion-button
+        fill="outline"
+        (click)="previousPage()"
+        [disabled]="currentPage() === 1"
+      >
+        <ion-icon name="chevron-back" slot="start"></ion-icon>
+        Previous
+      </ion-button>
+      
+      <ion-text class="page-info">
+        Page {{ currentPage() }} of {{ totalPages() }}
+      </ion-text>
+      
+      <ion-button
+        fill="outline"
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages()"
+      >
+        Next
+        <ion-icon name="chevron-forward" slot="end"></ion-icon>
+      </ion-button>
+    </div>
+
+  </div>
+</ion-content>

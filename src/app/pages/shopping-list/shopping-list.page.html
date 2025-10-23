@@ -1,0 +1,202 @@
+<ion-content [fullscreen]="true">
+  <div class="shopping-list-page">
+    <!-- Header -->
+    <div class="page-header">
+      <h1>Shopping Lists</h1>
+      <button class="btn btn-primary" (click)="createNewList()">
+        <span class="icon">+</span>
+        Create New List
+      </button>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="stats-container">
+      <div class="stat-card">
+        <div class="stat-value">{{ totalItems() }}</div>
+        <div class="stat-label">Total Lists</div>
+      </div>
+      <div class="stat-card stat-active">
+        <div class="stat-value">{{ activeCount() }}</div>
+        <div class="stat-label">Active</div>
+      </div>
+      <div class="stat-card stat-completed">
+        <div class="stat-value">{{ completedCount() }}</div>
+        <div class="stat-label">Completed</div>
+      </div>
+      <div class="stat-card stat-archived">
+        <div class="stat-value">{{ archivedCount() }}</div>
+        <div class="stat-label">Archived</div>
+      </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="filters-container">
+      <div class="filter-group">
+        <label for="search">Search</label>
+        <input
+          id="search"
+          type="text"
+          class="form-control"
+          placeholder="Search by title or comment..."
+          [(ngModel)]="searchQuery"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-group">
+        <label for="status">Status</label>
+        <select
+          id="status"
+          class="form-control"
+          [(ngModel)]="filterStatus"
+          (change)="applyFilters()"
+        >
+          <option value="">All Statuses</option>
+          <option value="active">Active</option>
+          <option value="completed">Completed</option>
+          <option value="archived">Archived</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label for="userId">User ID</label>
+        <input
+          id="userId"
+          type="text"
+          class="form-control"
+          placeholder="Filter by user ID..."
+          [(ngModel)]="filterUserId"
+          (keyup.enter)="applyFilters()"
+        />
+      </div>
+
+      <div class="filter-actions">
+        <button class="btn btn-secondary" (click)="applyFilters()">
+          Apply Filters
+        </button>
+        <button class="btn btn-outline" (click)="clearFilters()">
+          Clear
+        </button>
+      </div>
+    </div>
+
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error()">
+      <span class="error-icon">⚠️</span>
+      {{ error() }}
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <div class="spinner"></div>
+      <p>Loading shopping lists...</p>
+    </div>
+
+    <!-- Shopping Lists Grid -->
+    <div class="lists-grid" *ngIf="!isLoading() && hasLists()">
+      <div
+        class="list-card"
+        *ngFor="let list of shoppingLists()"
+        (click)="viewList(list._id)"
+      >
+        <!-- Card Header -->
+        <div class="list-card-header">
+          <h3 class="list-title">{{ list.title }}</h3>
+          <span class="status-badge" [ngClass]="getStatusClass(list.status)">
+            {{ list.status }}
+          </span>
+        </div>
+
+        <!-- Card Content -->
+        <div class="list-card-content">
+          <p class="list-comment" *ngIf="list.comment">
+            {{ list.comment }}
+          </p>
+          <div class="list-info">
+            <div class="info-item">
+              <span class="info-icon">📦</span>
+              <span>{{ list.items.length }} items</span>
+            </div>
+            <div class="info-item">
+              <span class="info-icon">📅</span>
+              <span>Updated {{ formatDate(list.updatedAt) }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Card Actions -->
+        <div class="list-card-actions">
+          <button
+            class="btn-icon"
+            *ngIf="list.status !== 'completed'"
+            (click)="markAsCompleted(list._id, $event)"
+            title="Mark as Completed"
+          >
+            ✓
+          </button>
+          <button
+            class="btn-icon"
+            *ngIf="list.status === 'completed' || list.status === 'archived'"
+            (click)="markAsActive(list._id, $event)"
+            title="Mark as Active"
+          >
+            ↻
+          </button>
+          <button
+            class="btn-icon"
+            *ngIf="list.status !== 'archived'"
+            (click)="markAsArchived(list._id, $event)"
+            title="Archive"
+          >
+            📁
+          </button>
+          <button
+            class="btn-icon"
+            (click)="duplicateList(list, $event)"
+            title="Duplicate"
+          >
+            📋
+          </button>
+          <button
+            class="btn-icon btn-danger"
+            (click)="deleteList(list._id, $event)"
+            title="Delete"
+          >
+            🗑️
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Empty State -->
+    <div class="empty-state" *ngIf="!isLoading() && !hasLists()">
+      <div class="empty-icon">🛒</div>
+      <h2>No Shopping Lists Found</h2>
+      <p>Create your first shopping list to get started!</p>
+      <button class="btn btn-primary" (click)="createNewList()">
+        Create Shopping List
+      </button>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination" *ngIf="!isLoading() && hasLists() && totalPages() > 1">
+      <button
+        class="btn btn-outline"
+        (click)="previousPage()"
+        [disabled]="currentPage() === 1"
+      >
+        Previous
+      </button>
+      <span class="pagination-info">
+        Page {{ currentPage() }} of {{ totalPages() }}
+      </span>
+      <button
+        class="btn btn-outline"
+        (click)="nextPage()"
+        [disabled]="currentPage() === totalPages()"
+      >
+        Next
+      </button>
+    </div>
+  </div>
+</ion-content>
