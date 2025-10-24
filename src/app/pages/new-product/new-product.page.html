@@ -1,0 +1,220 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/tabs/products"></ion-back-button>
+    </ion-buttons>
+    <ion-title>New Product</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onReset()" [disabled]="isSubmitting()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="new-product-page">
+
+    <!-- Success Message -->
+    <ion-card *ngIf="success()" color="success" class="success-card">
+      <ion-card-content>
+        <div class="success-content">
+          <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+          <div>
+            <h3>Product Created Successfully!</h3>
+            <p>Redirecting to products list...</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Error Message -->
+    <ion-card *ngIf="error()" color="danger" class="error-card">
+      <ion-card-content>
+        <div class="error-content">
+          <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+          <div>
+            <h3>Error</h3>
+            <p>{{ error() }}</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Form -->
+    <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
+      
+      <!-- Product ID (Required) -->
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-subtitle>Required Information</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          
+          <ion-item [class.ion-invalid]="hasError('productId')" [class.ion-touched]="productForm.get('productId')?.touched">
+            <ion-label position="stacked">
+              Product ID <ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input
+              formControlName="productId"
+              type="text"
+              placeholder="e.g., EAN:123456789"
+              [clearInput]="true"
+            ></ion-input>
+            <ion-note slot="helper">Unique identifier (e.g., EAN, UPC, SKU)</ion-note>
+            <ion-note slot="error" *ngIf="hasError('productId')">
+              {{ getErrorMessage('productId') }}
+            </ion-note>
+          </ion-item>
+
+          <ion-item [class.ion-invalid]="hasError('productName')" [class.ion-touched]="productForm.get('productName')?.touched">
+            <ion-label position="stacked">
+              Product Name <ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input
+              formControlName="productName"
+              type="text"
+              placeholder="e.g., Sparkling Water"
+              [clearInput]="true"
+            ></ion-input>
+            <ion-note slot="error" *ngIf="hasError('productName')">
+              {{ getErrorMessage('productName') }}
+            </ion-note>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Optional Details -->
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-subtitle>Optional Details</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+
+          <ion-item>
+            <ion-label position="stacked">Product Code</ion-label>
+            <ion-input
+              formControlName="productCode"
+              type="text"
+              placeholder="e.g., ABC-123"
+              [clearInput]="true"
+            ></ion-input>
+            <ion-note slot="helper">Internal product code or SKU</ion-note>
+          </ion-item>
+
+          <ion-item>
+            <ion-label position="stacked">Brand</ion-label>
+            <ion-input
+              formControlName="brands"
+              type="text"
+              placeholder="e.g., Acme Corporation"
+              [clearInput]="true"
+            ></ion-input>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Quantity Information -->
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-subtitle>Quantity Information</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+
+          <div class="quantity-group">
+            <ion-item [class.ion-invalid]="hasError('quantity')" [class.ion-touched]="productForm.get('quantity')?.touched">
+              <ion-label position="stacked">Quantity</ion-label>
+              <ion-input
+                formControlName="quantity"
+                type="number"
+                placeholder="e.g., 6"
+                min="0"
+              ></ion-input>
+              <ion-note slot="error" *ngIf="hasError('quantity')">
+                {{ getErrorMessage('quantity') }}
+              </ion-note>
+            </ion-item>
+
+            <ion-item>
+              <ion-label position="stacked">Unit</ion-label>
+              <ion-input
+                formControlName="quantityUnit"
+                type="text"
+                placeholder="e.g., bottles, boxes, kg"
+                [clearInput]="true"
+              ></ion-input>
+            </ion-item>
+          </div>
+
+          <ion-note class="quantity-note">
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Specify the quantity and unit (e.g., "6 bottles", "1 box", "500 grams")
+          </ion-note>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Description -->
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-subtitle>Additional Information</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+
+          <ion-item [class.ion-invalid]="hasError('description')" [class.ion-touched]="productForm.get('description')?.touched">
+            <ion-label position="stacked">Description</ion-label>
+            <ion-textarea
+              formControlName="description"
+              rows="4"
+              placeholder="Enter product description, features, or additional notes..."
+              [counter]="true"
+              maxlength="500"
+            ></ion-textarea>
+            <ion-note slot="error" *ngIf="hasError('description')">
+              {{ getErrorMessage('description') }}
+            </ion-note>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <ion-button
+          expand="block"
+          color="primary"
+          type="submit"
+          [disabled]="isSubmitting() || success()"
+        >
+          <ion-icon name="save" slot="start"></ion-icon>
+          {{ isSubmitting() ? 'Creating...' : 'Create Product' }}
+          <ion-spinner *ngIf="isSubmitting()" slot="end" name="crescent"></ion-spinner>
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="medium"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+        >
+          <ion-icon name="close" slot="start"></ion-icon>
+          Cancel
+        </ion-button>
+      </div>
+
+    </form>
+
+    <!-- Helper Text -->
+    <div class="helper-section">
+      <ion-note>
+        <ion-icon name="shield-checkmark-outline"></ion-icon>
+        <strong>Note:</strong> Fields marked with <ion-text color="danger">*</ion-text> are required.
+        You must have employee or admin privileges to create products.
+      </ion-note>
+    </div>
+
+  </div>
+</ion-content>

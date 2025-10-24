@@ -29,6 +29,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'new-product',
+        loadChildren: () =>
+          import('../new-product/new-product-routing.module').then(
+            (m) => m.NewProductPageRoutingModule
+          ),
+      },
+      {
         path: '',
         redirectTo: 'home',
         pathMatch: 'full',

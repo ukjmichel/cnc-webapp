@@ -13,7 +13,7 @@ export interface Product {
   productCode: string | null;
   productName: string;
   brands: string | null;
-  description: string | null;
+  description?: string;
   quantity: number | null;
   quantityUnit: string | null;
   createdAt?: string | Date;
@@ -22,27 +22,29 @@ export interface Product {
 
 /**
  * Input for creating a new product
+ * Optional fields should be omitted if not provided, not sent as null
  */
 export interface CreateProductInput {
   productId: string;
-  productCode?: string | null;
   productName: string;
-  brands?: string | null;
-  quantity?: number | null;
-  quantityUnit?: string | null;
-  description?: string | null;
+  productCode?: string;
+  brands?: string;
+  quantity?: number;
+  quantityUnit?: string;
+  description?: string;
 }
 
 /**
  * Input for updating an existing product
+ * Optional fields should be omitted if not provided, not sent as null
  */
 export interface UpdateProductInput {
-  productCode?: string | null;
   productName?: string;
-  brands?: string | null;
-  quantity?: number | null;
-  quantityUnit?: string | null;
-  description?: string | null;
+  productCode?: string;
+  brands?: string;
+  quantity?: number;
+  quantityUnit?: string;
+  description?: string;
 }
 
 /**
