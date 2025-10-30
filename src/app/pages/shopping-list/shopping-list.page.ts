@@ -234,7 +234,7 @@ export class ShoppingListPage implements OnInit {
    * Navigate to create new shopping list
    */
   createNewList(): void {
-    this.router.navigate(['/shopping-lists/create']);
+    this.router.navigate(['/new-shopping-list']);
   }
 
   /**

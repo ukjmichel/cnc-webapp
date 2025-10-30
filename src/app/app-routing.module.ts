@@ -39,6 +39,13 @@ const routes: Routes = [
         (m) => m.NewProductPageRoutingModule
       ),
   },
+  {
+    path: 'new-shopping-list',
+    loadChildren: () =>
+      import('./pages/new-shopping-list/new-shopping-list-routing.module').then(
+        (m) => m.NewShoppingListPageRoutingModule
+      ),
+  },
 ];
 
 @NgModule({
