@@ -1,0 +1,252 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button defaultHref="/shopping-list"></ion-back-button>
+    </ion-buttons>
+    <ion-title>New Shopping List</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="onReset()" [disabled]="isSubmitting()">
+        <ion-icon name="refresh" slot="icon-only"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="new-shopping-list-page">
+
+    <!-- Success Message -->
+    <ion-card *ngIf="success()" color="success" class="success-card">
+      <ion-card-content>
+        <div class="success-content">
+          <ion-icon name="checkmark-circle" class="success-icon"></ion-icon>
+          <div>
+            <h3>Shopping List Created Successfully!</h3>
+            <p>Redirecting to shopping lists...</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Error Message -->
+    <ion-card *ngIf="error()" color="danger" class="error-card">
+      <ion-card-content>
+        <div class="error-content">
+          <ion-icon name="alert-circle" class="error-icon"></ion-icon>
+          <div>
+            <h3>Error</h3>
+            <p>{{ error() }}</p>
+          </div>
+        </div>
+      </ion-card-content>
+    </ion-card>
+
+    <!-- Form -->
+    <form [formGroup]="shoppingListForm" (ngSubmit)="onSubmit()">
+
+      <!-- Basic Information -->
+      <ion-card class="form-card">
+        <ion-card-header>
+          <ion-card-subtitle>Basic Information</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+
+          <ion-item [class.ion-invalid]="hasError('userId')" [class.ion-touched]="shoppingListForm.get('userId')?.touched">
+            <ion-label position="stacked">
+              User ID <ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input
+              formControlName="userId"
+              type="text"
+              placeholder="Enter user ID"
+              [clearInput]="true"
+            ></ion-input>
+            <ion-note slot="helper">The user who owns this shopping list</ion-note>
+            <ion-note slot="error" *ngIf="hasError('userId')">
+              {{ getErrorMessage('userId') }}
+            </ion-note>
+          </ion-item>
+
+          <ion-item [class.ion-invalid]="hasError('title')" [class.ion-touched]="shoppingListForm.get('title')?.touched">
+            <ion-label position="stacked">
+              Title <ion-text color="danger">*</ion-text>
+            </ion-label>
+            <ion-input
+              formControlName="title"
+              type="text"
+              placeholder="e.g., Weekly Groceries"
+              [clearInput]="true"
+            ></ion-input>
+            <ion-note slot="error" *ngIf="hasError('title')">
+              {{ getErrorMessage('title') }}
+            </ion-note>
+          </ion-item>
+
+          <ion-item [class.ion-invalid]="hasError('comment')" [class.ion-touched]="shoppingListForm.get('comment')?.touched">
+            <ion-label position="stacked">Comment (Optional)</ion-label>
+            <ion-textarea
+              formControlName="comment"
+              rows="3"
+              placeholder="Add notes or comments about this shopping list..."
+              [counter]="true"
+              maxlength="500"
+            ></ion-textarea>
+            <ion-note slot="error" *ngIf="hasError('comment')">
+              {{ getErrorMessage('comment') }}
+            </ion-note>
+          </ion-item>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Shopping List Items -->
+      <ion-card class="form-card items-card">
+        <ion-card-header>
+          <div class="items-header">
+            <ion-card-subtitle>Shopping List Items</ion-card-subtitle>
+            <ion-button size="small" (click)="addItem()" [disabled]="isLoadingProducts()">
+              <ion-icon name="add" slot="start"></ion-icon>
+              Add Item
+            </ion-button>
+          </div>
+        </ion-card-header>
+        <ion-card-content>
+
+          <!-- Items List -->
+          <div *ngIf="items.length > 0" formArrayName="items" class="items-list">
+            <div *ngFor="let item of items.controls; let i = index" [formGroupName]="i" class="item-group">
+
+              <div class="item-header">
+                <h4>Item {{ i + 1 }}</h4>
+                <ion-button fill="clear" color="danger" size="small" (click)="removeItem(i)">
+                  <ion-icon name="trash" slot="icon-only"></ion-icon>
+                </ion-button>
+              </div>
+
+              <ion-item [class.ion-invalid]="hasItemError(i, 'productId')" [class.ion-touched]="items.at(i).get('productId')?.touched">
+                <ion-label position="stacked">
+                  Product <ion-text color="danger">*</ion-text>
+                </ion-label>
+                <ion-select
+                  formControlName="productId"
+                  placeholder="Select a product"
+                  (ionChange)="onProductSelect(i, $event)"
+                  interface="popover"
+                >
+                  <ion-select-option *ngFor="let product of products()" [value]="product.productId">
+                    {{ product.productName }}
+                  </ion-select-option>
+                </ion-select>
+                <ion-note slot="error" *ngIf="hasItemError(i, 'productId')">
+                  {{ getItemErrorMessage(i, 'productId') }}
+                </ion-note>
+              </ion-item>
+
+              <ion-item>
+                <ion-label position="stacked">Product Name</ion-label>
+                <ion-input
+                  formControlName="productName"
+                  type="text"
+                  placeholder="Auto-filled or enter custom name"
+                  [clearInput]="true"
+                ></ion-input>
+                <ion-note slot="helper">Automatically filled when you select a product</ion-note>
+              </ion-item>
+
+              <div class="quantity-row">
+                <ion-item [class.ion-invalid]="hasItemError(i, 'quantity')" [class.ion-touched]="items.at(i).get('quantity')?.touched">
+                  <ion-label position="stacked">
+                    Quantity <ion-text color="danger">*</ion-text>
+                  </ion-label>
+                  <ion-input
+                    formControlName="quantity"
+                    type="number"
+                    placeholder="1"
+                    min="1"
+                  ></ion-input>
+                  <ion-note slot="error" *ngIf="hasItemError(i, 'quantity')">
+                    {{ getItemErrorMessage(i, 'quantity') }}
+                  </ion-note>
+                </ion-item>
+
+                <ion-item>
+                  <ion-label position="stacked">Unit</ion-label>
+                  <ion-input
+                    formControlName="quantityUnit"
+                    type="text"
+                    placeholder="e.g., bottles, kg"
+                    [clearInput]="true"
+                  ></ion-input>
+                </ion-item>
+              </div>
+
+              <ion-item>
+                <ion-label position="stacked">Item Comment</ion-label>
+                <ion-input
+                  formControlName="comment"
+                  type="text"
+                  placeholder="Optional notes for this item"
+                  [clearInput]="true"
+                ></ion-input>
+              </ion-item>
+
+            </div>
+          </div>
+
+          <!-- Empty State -->
+          <div *ngIf="items.length === 0" class="empty-items">
+            <ion-icon name="cart-outline" class="empty-icon"></ion-icon>
+            <p>No items added yet</p>
+            <ion-button size="small" (click)="addItem()" [disabled]="isLoadingProducts()">
+              <ion-icon name="add" slot="start"></ion-icon>
+              Add Your First Item
+            </ion-button>
+          </div>
+
+          <!-- Loading Products -->
+          <div *ngIf="isLoadingProducts()" class="loading-products">
+            <ion-spinner></ion-spinner>
+            <p>Loading products...</p>
+          </div>
+
+        </ion-card-content>
+      </ion-card>
+
+      <!-- Action Buttons -->
+      <div class="action-buttons">
+        <ion-button
+          expand="block"
+          color="primary"
+          type="submit"
+          [disabled]="isSubmitting() || success()"
+        >
+          <ion-icon name="save" slot="start"></ion-icon>
+          {{ isSubmitting() ? 'Creating...' : 'Create Shopping List' }}
+          <ion-spinner *ngIf="isSubmitting()" slot="end" name="crescent"></ion-spinner>
+        </ion-button>
+
+        <ion-button
+          expand="block"
+          fill="outline"
+          color="medium"
+          (click)="onCancel()"
+          [disabled]="isSubmitting()"
+        >
+          <ion-icon name="close" slot="start"></ion-icon>
+          Cancel
+        </ion-button>
+      </div>
+
+    </form>
+
+    <!-- Helper Text -->
+    <div class="helper-section">
+      <ion-note>
+        <ion-icon name="information-circle-outline"></ion-icon>
+        <strong>Note:</strong> Fields marked with <ion-text color="danger">*</ion-text> are required.
+        Add at least one item to create your shopping list.
+      </ion-note>
+    </div>
+
+  </div>
+</ion-content>
