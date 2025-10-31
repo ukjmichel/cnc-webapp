@@ -10,15 +10,15 @@
  */
 
 import { Router } from 'express';
-import { BarcodeController } from '../controllers/barcode.controller.js';
-import { requireEmployeeOrAdmin } from '../middlewares/requireRole.js';
-import { requireAuth } from '../middlewares/requireAuth.js';
+import { BarcodeController } from '../controllers/barcode.controller.ts';
+import { requireEmployeeOrAdmin } from '../middlewares/requireRole.ts';
+import { requireAuth } from '../middlewares/requireAuth.ts';
 import {
   vGetItemByCode,
   vGetBatchItems,
   vGetFoodData,
   vGetRetailData,
-} from '../validators/barcode.validator.js';
+} from '../validators/barcode.validator.ts';
 
 const router = Router();
 

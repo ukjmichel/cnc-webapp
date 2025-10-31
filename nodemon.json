@@ -1,0 +1,18 @@
+{
+  "watch": [
+    "server",
+    "src/controllers",
+    "src/routes",
+    "src/services",
+    "src/middlewares",
+    "src/validators",
+    "src/errors"
+  ],
+  "ext": "ts,js,json",
+  "ignore": [
+    "src/app/**/*",
+    "**/*.spec.ts",
+    "node_modules"
+  ],
+  "exec": "ts-node --esm --project tsconfig.server.json server/index.ts"
+}

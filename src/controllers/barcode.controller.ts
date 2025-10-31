@@ -18,9 +18,9 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import { OpenFoodFactsService } from '../services/openfoodfacts.service.js';
-import { UPCItemDBService } from '../services/upcitemdb.service.js';
-import { BadRequestError, NotFoundError } from '../errors/index.js';
+import { OpenFoodFactsService } from '../services/openfoodfacts.service.ts';
+import { UPCItemDBService } from '../services/upcitemdb.service.ts';
+import { BadRequestError, NotFoundError } from '../errors/index.ts';
 
 interface CombinedItemResponse {
   barcode: string;

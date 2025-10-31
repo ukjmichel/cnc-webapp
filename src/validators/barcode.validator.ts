@@ -9,7 +9,7 @@
  */
 
 import type { Request, Response, NextFunction } from 'express';
-import { BadRequestError } from '../errors/index.js';
+import { BadRequestError } from '../errors/index.ts';
 
 /**
  * Validate barcode code parameter
