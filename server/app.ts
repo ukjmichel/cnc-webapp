@@ -11,6 +11,8 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import authRoutes from '../src/app/api/routes/auth.routes.ts';
+import userRoutes from '../src/app/api/routes/user.routes.ts';
 import barcodeRoutes from '../src/app/api/routes/barcode.routes.ts';
 import { CustomError } from '../src/app/api/errors/index.ts';
 
@@ -60,6 +62,8 @@ app.get('/health', (req: Request, res: Response) => {
 });
 
 // API Routes
+app.use('/api/auth', authRoutes);
+app.use('/api/users', userRoutes);
 app.use('/api/barcode', barcodeRoutes);
 
 // 404 handler
