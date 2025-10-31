@@ -16,7 +16,9 @@ import {
 import { Router } from '@angular/router';
 import { IonicModule } from '@ionic/angular';
 import { ProductService } from '../../services/product.service';
+import { BarcodeService } from '../../services/barcode.service';
 import { CreateProductInput } from '../../models/product.model';
+import { CombinedBarcodeResponse } from '../../models/barcode.model';
 
 @Component({
   selector: 'app-new-product',
@@ -31,9 +33,16 @@ export class NewProductPage implements OnInit {
   error = signal<string | null>(null);
   success = signal<boolean>(false);
 
+  // Barcode scanning properties
+  barcodeInput = signal<string>('');
+  isLookingUpBarcode = signal<boolean>(false);
+  barcodeError = signal<string | null>(null);
+  barcodeSuccess = signal<string | null>(null);
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
+    private barcodeService: BarcodeService,
     private router: Router
   ) {}
 
@@ -222,5 +231,130 @@ export class NewProductPage implements OnInit {
       const control = formGroup.get(key);
       control?.markAsTouched();
     });
+  }
+
+  /**
+   * Lookup product by barcode and prefill form
+   */
+  onBarcodeLookup(): void {
+    const barcode = this.barcodeInput().trim();
+
+    if (!barcode) {
+      this.barcodeError.set('Please enter a barcode');
+      return;
+    }
+
+    this.isLookingUpBarcode.set(true);
+    this.barcodeError.set(null);
+    this.barcodeSuccess.set(null);
+
+    this.barcodeService.getItemByCode(barcode).subscribe({
+      next: (response: CombinedBarcodeResponse) => {
+        this.isLookingUpBarcode.set(false);
+        this.prefillFormFromBarcodeData(response);
+        this.barcodeSuccess.set('Product data loaded successfully!');
+
+        // Clear success message after 3 seconds
+        setTimeout(() => {
+          this.barcodeSuccess.set(null);
+        }, 3000);
+      },
+      error: (err) => {
+        this.isLookingUpBarcode.set(false);
+
+        if (err.status === 404) {
+          this.barcodeError.set(
+            'Product not found in barcode databases. You can still create it manually.'
+          );
+        } else if (err.status === 401) {
+          this.barcodeError.set('You must be logged in to lookup barcodes.');
+        } else if (err.status === 403) {
+          this.barcodeError.set(
+            'You do not have permission to lookup barcodes.'
+          );
+        } else {
+          this.barcodeError.set('Failed to lookup barcode. Please try again.');
+        }
+
+        console.error('Error looking up barcode:', err);
+      },
+    });
+  }
+
+  /**
+   * Prefill form fields from barcode API response
+   */
+  private prefillFormFromBarcodeData(response: CombinedBarcodeResponse): void {
+    const { barcode, foodData, retailData } = response;
+
+    // Set productId with the barcode
+    if (barcode) {
+      this.productForm.patchValue({
+        productId: barcode,
+        productCode: barcode,
+      });
+    }
+
+    // Prioritize food data for product name
+    if (foodData?.product_name) {
+      this.productForm.patchValue({
+        productName: foodData.product_name,
+      });
+    } else if (retailData?.description) {
+      this.productForm.patchValue({
+        productName: retailData.description,
+      });
+    }
+
+    // Set brand
+    if (retailData?.brand) {
+      this.productForm.patchValue({
+        brands: retailData.brand,
+      });
+    }
+
+    // Set quantity and unit from food data
+    if (foodData?.product_quantity) {
+      // Try to parse quantity (e.g., "500g" -> quantity: 500, unit: "g")
+      const quantityMatch = foodData.product_quantity.match(/^(\d+\.?\d*)\s*(.*)$/);
+      if (quantityMatch) {
+        const [, quantity, unit] = quantityMatch;
+        this.productForm.patchValue({
+          quantity: parseFloat(quantity),
+          quantityUnit: unit || foodData.product_quantity_unit || '',
+        });
+      } else {
+        // If we can't parse, just set the unit
+        this.productForm.patchValue({
+          quantityUnit: foodData.product_quantity || '',
+        });
+      }
+    } else if (foodData?.quantity) {
+      // Try quantity field as fallback
+      const quantityMatch = foodData.quantity.match(/^(\d+\.?\d*)\s*(.*)$/);
+      if (quantityMatch) {
+        const [, quantity, unit] = quantityMatch;
+        this.productForm.patchValue({
+          quantity: parseFloat(quantity),
+          quantityUnit: unit || '',
+        });
+      }
+    }
+
+    // Set description from keywords if available
+    if (foodData?.keywords) {
+      this.productForm.patchValue({
+        description: `Keywords: ${foodData.keywords}`,
+      });
+    }
+  }
+
+  /**
+   * Clear barcode input and messages
+   */
+  onClearBarcode(): void {
+    this.barcodeInput.set('');
+    this.barcodeError.set(null);
+    this.barcodeSuccess.set(null);
   }
 }

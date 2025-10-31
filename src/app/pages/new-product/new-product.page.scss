@@ -137,6 +137,93 @@
   }
 }
 
+// Barcode Card
+.barcode-card {
+  ion-card-header {
+    ion-card-subtitle {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      ion-icon {
+        font-size: 1.25rem;
+      }
+    }
+
+    ion-card-title {
+      font-size: 1.125rem;
+      margin-top: 0.25rem;
+    }
+  }
+
+  .barcode-message {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    border-radius: 8px;
+    font-size: 0.875rem;
+    margin-bottom: 1rem;
+
+    ion-icon {
+      font-size: 1.25rem;
+      flex-shrink: 0;
+    }
+
+    &[color="success"] {
+      background: rgba(var(--ion-color-success-rgb), 0.1);
+      color: var(--ion-color-success);
+    }
+
+    &[color="danger"] {
+      background: rgba(var(--ion-color-danger-rgb), 0.1);
+      color: var(--ion-color-danger);
+    }
+  }
+
+  .barcode-input-group {
+    margin-bottom: 1rem;
+  }
+
+  .barcode-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+
+    ion-button:first-child {
+      flex: 1;
+    }
+
+    ion-button[fill="clear"] {
+      --padding-start: 0.75rem;
+      --padding-end: 0.75rem;
+    }
+
+    ion-spinner {
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .barcode-info {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    padding: 0.75rem;
+    background: var(--ion-color-light);
+    border-radius: 8px;
+    font-size: 0.8125rem;
+    color: var(--ion-color-medium-shade);
+    line-height: 1.4;
+
+    ion-icon {
+      font-size: 1.125rem;
+      flex-shrink: 0;
+      margin-top: 0.125rem;
+    }
+  }
+}
+
 // Quantity Group
 .quantity-group {
   display: grid;
@@ -251,8 +338,12 @@
   .helper-section {
     background: rgba(255, 255, 255, 0.05);
   }
-  
+
   .quantity-note {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  .barcode-info {
     background: rgba(255, 255, 255, 0.05);
   }
 }
