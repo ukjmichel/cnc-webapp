@@ -142,14 +142,46 @@ curl -X GET "http://localhost:3000/api/barcode/3017620422003/food?fields=product
 }
 ```
 
+## Camera Scanning (Implemented)
+
+✅ **Camera-Based Barcode Scanning**
+- Integrated `@capacitor-mlkit/barcode-scanning` package (v7.3.0)
+- Camera scan button in new-product page
+- Automatic permission handling for camera access
+- Supports all standard barcode formats (UPC, EAN, GTIN, QR codes, etc.)
+- Automatically triggers API lookup after successful scan
+- Graceful error handling and user feedback
+
+### Usage
+1. Click "Scan with Camera" button on new-product page
+2. Grant camera permission if prompted
+3. Point camera at barcode
+4. Barcode is automatically detected and product lookup is initiated
+5. Form is prefilled with product information
+
+### Implementation Details
+- **TypeScript** (`src/app/pages/new-product/new-product.page.ts`):
+  - `onScanBarcode()` method for camera scanning
+  - Permission check and request handling
+  - Automatic barcode value extraction
+  - Auto-triggers `onBarcodeLookup()` after successful scan
+
+- **HTML Template** (`src/app/pages/new-product/new-product.page.html`):
+  - Primary "Scan with Camera" button with camera icon
+  - Positioned above manual lookup button
+
+- **Package**: `@capacitor-mlkit/barcode-scanning@7.3.0`
+  - ML Kit-based barcode detection
+  - High accuracy and performance
+  - Compatible with Capacitor 7.x
+
 ## Future Enhancements
 
-- [ ] Add camera-based barcode scanning using `@capacitor-community/barcode-scanner`
 - [ ] Cache barcode lookup results to reduce API calls
-- [ ] Add barcode scanner button with native camera integration
-- [ ] Support QR codes in addition to standard barcodes
 - [ ] Add product image preview from barcode lookup
 - [ ] Implement offline barcode lookup with local database
+- [ ] Add batch scanning mode for multiple products
+- [ ] Support scanning from image gallery
 
 ## Notes
 

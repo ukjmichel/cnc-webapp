@@ -19,6 +19,7 @@ import { ProductService } from '../../services/product.service';
 import { BarcodeService } from '../../services/barcode.service';
 import { CreateProductInput } from '../../models/product.model';
 import { CombinedBarcodeResponse } from '../../models/barcode.model';
+import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
 
 @Component({
   selector: 'app-new-product',
@@ -356,5 +357,60 @@ export class NewProductPage implements OnInit {
     this.barcodeInput.set('');
     this.barcodeError.set(null);
     this.barcodeSuccess.set(null);
+  }
+
+  /**
+   * Scan barcode using device camera
+   */
+  async onScanBarcode(): Promise<void> {
+    try {
+      // Clear previous messages
+      this.barcodeError.set(null);
+      this.barcodeSuccess.set(null);
+
+      // Check and request camera permissions
+      const { camera } = await BarcodeScanner.checkPermissions();
+
+      if (camera === 'denied') {
+        this.barcodeError.set('Camera permission denied. Please enable camera access in your device settings.');
+        return;
+      }
+
+      if (camera !== 'granted') {
+        const result = await BarcodeScanner.requestPermissions();
+        if (result.camera !== 'granted') {
+          this.barcodeError.set('Camera permission is required to scan barcodes.');
+          return;
+        }
+      }
+
+      // Start scanning
+      const result = await BarcodeScanner.scan();
+
+      if (result.barcodes && result.barcodes.length > 0) {
+        const barcode = result.barcodes[0];
+
+        // Set the barcode value
+        if (barcode.rawValue) {
+          this.barcodeInput.set(barcode.rawValue);
+
+          // Automatically trigger lookup
+          this.onBarcodeLookup();
+        } else {
+          this.barcodeError.set('No barcode value detected. Please try again.');
+        }
+      } else {
+        this.barcodeError.set('No barcode detected. Please try again.');
+      }
+    } catch (err: any) {
+      console.error('Error scanning barcode:', err);
+
+      if (err.message?.includes('cancelled')) {
+        // User cancelled scanning, no need to show error
+        return;
+      }
+
+      this.barcodeError.set('Failed to scan barcode. Please try again or enter manually.');
+    }
   }
 }

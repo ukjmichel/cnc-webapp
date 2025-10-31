@@ -85,6 +85,16 @@
           <div class="barcode-actions">
             <ion-button
               expand="block"
+              color="primary"
+              (click)="onScanBarcode()"
+              [disabled]="isLookingUpBarcode()"
+            >
+              <ion-icon name="camera" slot="start"></ion-icon>
+              Scan with Camera
+            </ion-button>
+
+            <ion-button
+              expand="block"
               color="secondary"
               (click)="onBarcodeLookup()"
               [disabled]="isLookingUpBarcode() || !barcodeInput()"
