@@ -368,18 +368,36 @@ export class NewProductPage implements OnInit {
       this.barcodeError.set(null);
       this.barcodeSuccess.set(null);
 
+      // Check if we're running in a web browser
+      const isWeb = !('Capacitor' in window) || (window as any).Capacitor?.getPlatform() === 'web';
+
+      if (isWeb) {
+        this.barcodeError.set(
+          'Camera scanning is only available on mobile devices. Please build the app for iOS/Android or enter the barcode manually below.'
+        );
+        return;
+      }
+
+      // Check if the plugin is available
+      if (typeof BarcodeScanner === 'undefined') {
+        this.barcodeError.set(
+          'Camera scanner plugin not available. Please enter the barcode manually.'
+        );
+        return;
+      }
+
       // Check and request camera permissions
       const { camera } = await BarcodeScanner.checkPermissions();
 
       if (camera === 'denied') {
-        this.barcodeError.set('Camera permission denied. Please enable camera access in your device settings.');
+        this.barcodeError.set('Camera permission denied. Please enable camera access in your device settings or enter the barcode manually.');
         return;
       }
 
       if (camera !== 'granted') {
         const result = await BarcodeScanner.requestPermissions();
         if (result.camera !== 'granted') {
-          this.barcodeError.set('Camera permission is required to scan barcodes.');
+          this.barcodeError.set('Camera permission is required to scan barcodes. Please enter the barcode manually.');
           return;
         }
       }
@@ -393,9 +411,12 @@ export class NewProductPage implements OnInit {
         // Set the barcode value
         if (barcode.rawValue) {
           this.barcodeInput.set(barcode.rawValue);
+          this.barcodeSuccess.set(`Barcode detected: ${barcode.rawValue}`);
 
-          // Automatically trigger lookup
-          this.onBarcodeLookup();
+          // Automatically trigger lookup after a short delay
+          setTimeout(() => {
+            this.onBarcodeLookup();
+          }, 500);
         } else {
           this.barcodeError.set('No barcode value detected. Please try again.');
         }
@@ -407,6 +428,13 @@ export class NewProductPage implements OnInit {
 
       if (err.message?.includes('cancelled')) {
         // User cancelled scanning, no need to show error
+        return;
+      }
+
+      if (err.message?.includes('not available') || err.message?.includes('not implemented')) {
+        this.barcodeError.set(
+          'Camera scanning is not available in the web browser. Please enter the barcode manually or run the app on a mobile device.'
+        );
         return;
       }
 
