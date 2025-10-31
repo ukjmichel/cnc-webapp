@@ -9,7 +9,7 @@ const routes: Routes = [
       import('./pages/tabs/tabs-routing.module').then(
         (m) => m.TabsPageRoutingModule
       ),
-    //canActivate: [authGuard], // Protect all tabs with auth guard
+    canActivate: [authGuard], // Protect all tabs with auth guard
   },
   {
     path: 'auth',
@@ -28,9 +28,9 @@ const routes: Routes = [
   {
     path: 'shopping-lists/:id',
     loadChildren: () =>
-      import('./pages/shopping-list-detail/shopping-list-detail-routing.module').then(
-        (m) => m.ShoppingListDetailPageRoutingModule
-      ),
+      import(
+        './pages/shopping-list-detail/shopping-list-detail-routing.module'
+      ).then((m) => m.ShoppingListDetailPageRoutingModule),
   },
   {
     path: 'products',
