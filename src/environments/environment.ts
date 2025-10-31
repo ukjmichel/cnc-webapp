@@ -3,8 +3,10 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
-  apiUrl: 'http://localhost:3000/',
+  production: false,
+  // For development on browser, use localhost
+  // For Capacitor apps, replace with your PC's local IP (e.g., 192.168.1.100)
+  apiUrl: 'http://localhost:3000/api',
 };
 
 /*

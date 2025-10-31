@@ -1,11 +1,11 @@
-// src/routes/shopping-list.routes.ts
+// src/app/api/routes/shopping-list.routes.ts
 
 import { Router } from 'express';
 
-import { requireAuth } from '../middlewares/requireAuth.js';
-import { validate } from '../middlewares/validate.js';
+import { requireAuth } from '../middlewares/requireAuth.ts';
+import { requireEmployeeOrAdmin } from '../middlewares/requireRole.ts';
 
-import { ShoppingListController } from '../controllers/shopping-list.controller.js';
+import { ShoppingListController } from '../controllers/shopping-list.controller.ts';
 import {
   vAddItem,
   vCreateShoppingList,
@@ -17,8 +17,7 @@ import {
   vParamUserId,
   vUpdateItem,
   vUpdateShoppingList,
-} from '../validators/shopping-list.validator.js';
-import { requireEmployeeOrAdmin } from '../middlewares/requireRole.js';
+} from '../validators/shopping-list.validator.ts';
 
 const shoppingListRouter = Router();
 
@@ -233,7 +232,6 @@ shoppingListRouter.post(
   '/',
   requireAuth,
   vCreateShoppingList,
-  validate,
   ShoppingListController.create
 );
 
@@ -297,7 +295,6 @@ shoppingListRouter.get(
   '/',
   requireAuth,
   vListShoppingLists,
-  validate,
   ShoppingListController.list
 );
 
@@ -339,7 +336,6 @@ shoppingListRouter.get(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamUserId,
-  validate,
   ShoppingListController.getByUserId
 );
 
@@ -375,7 +371,6 @@ shoppingListRouter.get(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamUserId,
-  validate,
   ShoppingListController.getActiveByUserId
 );
 
@@ -411,7 +406,6 @@ shoppingListRouter.get(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamUserId,
-  validate,
   ShoppingListController.getStats
 );
 
@@ -449,7 +443,6 @@ shoppingListRouter.get(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamId,
-  validate,
   ShoppingListController.getById
 );
 
@@ -494,7 +487,6 @@ shoppingListRouter.patch(
   requireEmployeeOrAdmin,
   vParamId,
   vUpdateShoppingList,
-  validate,
   ShoppingListController.update
 );
 
@@ -532,7 +524,6 @@ shoppingListRouter.delete(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamId,
-  validate,
   ShoppingListController.remove
 );
 
@@ -577,7 +568,6 @@ shoppingListRouter.post(
   requireEmployeeOrAdmin,
   vParamId,
   vAddItem,
-  validate,
   ShoppingListController.addItem
 );
 
@@ -620,7 +610,6 @@ shoppingListRouter.delete(
   requireEmployeeOrAdmin,
   vParamListId,
   vParamItemId,
-  validate,
   ShoppingListController.removeItem
 );
 
@@ -670,7 +659,6 @@ shoppingListRouter.patch(
   vParamListId,
   vParamItemId,
   vUpdateItem,
-  validate,
   ShoppingListController.updateItem
 );
 
@@ -720,7 +708,6 @@ shoppingListRouter.patch(
   requireEmployeeOrAdmin,
   vParamListId,
   vParamItemId,
-  validate,
   ShoppingListController.updateItemStatus
 );
 
@@ -758,7 +745,6 @@ shoppingListRouter.patch(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamId,
-  validate,
   ShoppingListController.markAsCompleted
 );
 
@@ -796,7 +782,6 @@ shoppingListRouter.patch(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamId,
-  validate,
   ShoppingListController.markAsArchived
 );
 
@@ -834,7 +819,6 @@ shoppingListRouter.patch(
   requireAuth,
   requireEmployeeOrAdmin,
   vParamId,
-  validate,
   ShoppingListController.markAsActive
 );
 
@@ -883,7 +867,6 @@ shoppingListRouter.post(
   requireEmployeeOrAdmin,
   vParamId,
   vDuplicate,
-  validate,
   ShoppingListController.duplicate
 );
 

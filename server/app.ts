@@ -11,14 +11,34 @@
 import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
-import barcodeRoutes from '../src/routes/barcode.routes.ts';
-import { CustomError } from '../src/errors/index.ts';
+import barcodeRoutes from '../src/app/api/routes/barcode.routes.ts';
+import { CustomError } from '../src/app/api/errors/index.ts';
 
 const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8100', 'http://localhost:4200'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, Postman, etc.)
+    if (!origin) return callback(null, true);
+
+    // Allow localhost and local network requests
+    const allowedOrigins = [
+      'http://localhost:8100',
+      'http://localhost:4200',
+      'capacitor://localhost',
+      'ionic://localhost',
+    ];
+
+    // Allow any local network IP (192.168.x.x, 10.x.x.x, etc.)
+    const localNetworkPattern = /^http:\/\/(192\.168\.|10\.|172\.(1[6-9]|2[0-9]|3[01])\.)/;
+
+    if (allowedOrigins.indexOf(origin) !== -1 || localNetworkPattern.test(origin)) {
+      callback(null, true);
+    } else {
+      callback(null, true); // Allow all origins for development
+    }
+  },
   credentials: true,
 }));
 app.use(express.json());

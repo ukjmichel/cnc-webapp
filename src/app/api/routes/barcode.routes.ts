@@ -1,4 +1,4 @@
-// src/routes/barcode.routes.ts
+// src/app/api/routes/barcode.routes.ts
 
 /**
  * =============================================================================

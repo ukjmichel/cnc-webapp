@@ -1,4 +1,4 @@
-// src/services/openfoodfacts.service.ts
+// src/app/api/services/openfoodfacts.service.ts
 
 /**
  * =============================================================================

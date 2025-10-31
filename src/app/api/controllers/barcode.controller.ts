@@ -1,4 +1,4 @@
-// src/controllers/barcode.controller.ts
+// src/app/api/controllers/barcode.controller.ts
 
 /**
  * =============================================================================
