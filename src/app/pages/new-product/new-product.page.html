@@ -41,9 +41,83 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Barcode Scanner Section -->
+    <ion-card class="form-card barcode-card">
+      <ion-card-header>
+        <ion-card-subtitle>
+          <ion-icon name="barcode-outline"></ion-icon>
+          Barcode Lookup
+        </ion-card-subtitle>
+        <ion-card-title>Scan or Enter Barcode</ion-card-title>
+      </ion-card-header>
+      <ion-card-content>
+
+        <!-- Barcode Success Message -->
+        <ion-note *ngIf="barcodeSuccess()" color="success" class="barcode-message">
+          <ion-icon name="checkmark-circle"></ion-icon>
+          {{ barcodeSuccess() }}
+        </ion-note>
+
+        <!-- Barcode Error Message -->
+        <ion-note *ngIf="barcodeError()" color="danger" class="barcode-message">
+          <ion-icon name="alert-circle"></ion-icon>
+          {{ barcodeError() }}
+        </ion-note>
+
+        <!-- Barcode Input -->
+        <div class="barcode-input-group">
+          <ion-item>
+            <ion-label position="stacked">Barcode (UPC/EAN/GTIN)</ion-label>
+            <ion-input
+              type="text"
+              placeholder="e.g., 012345678905"
+              [value]="barcodeInput()"
+              (ionInput)="barcodeInput.set($any($event.target).value)"
+              [clearInput]="true"
+              [disabled]="isLookingUpBarcode()"
+            ></ion-input>
+            <ion-note slot="helper">
+              Enter a barcode to automatically fill product information
+            </ion-note>
+          </ion-item>
+
+          <!-- Barcode Action Buttons -->
+          <div class="barcode-actions">
+            <ion-button
+              expand="block"
+              color="secondary"
+              (click)="onBarcodeLookup()"
+              [disabled]="isLookingUpBarcode() || !barcodeInput()"
+            >
+              <ion-icon name="search" slot="start"></ion-icon>
+              {{ isLookingUpBarcode() ? 'Looking up...' : 'Lookup Barcode' }}
+              <ion-spinner *ngIf="isLookingUpBarcode()" slot="end" name="crescent"></ion-spinner>
+            </ion-button>
+
+            <ion-button
+              fill="clear"
+              color="medium"
+              (click)="onClearBarcode()"
+              [disabled]="isLookingUpBarcode()"
+            >
+              <ion-icon name="close-circle" slot="start"></ion-icon>
+              Clear
+            </ion-button>
+          </div>
+        </div>
+
+        <ion-note class="barcode-info">
+          <ion-icon name="information-circle-outline"></ion-icon>
+          If the product exists in our database, it will be shown instead of prefilling the form.
+          Otherwise, available information will be filled automatically.
+        </ion-note>
+
+      </ion-card-content>
+    </ion-card>
+
     <!-- Form -->
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
-      
+
       <!-- Product ID (Required) -->
       <ion-card class="form-card">
         <ion-card-header>
