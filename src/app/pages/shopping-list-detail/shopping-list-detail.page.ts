@@ -146,7 +146,7 @@ export class ShoppingListDetailPage implements OnInit {
    * Navigate back to the shopping list overview
    */
   goBack(): void {
-    this.router.navigate(['/shopping-list']);
+    this.router.navigate(['/tabs/shopping-list']);
   }
 
   /**
