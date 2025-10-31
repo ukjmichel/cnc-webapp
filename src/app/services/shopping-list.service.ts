@@ -283,6 +283,29 @@ export class ShoppingListService {
   }
 
   /**
+   * Updates the status of an item in a shopping list.
+   * @param listId Shopping list ID
+   * @param itemId Item ID
+   * @param status New status ('pending' or 'in_cart')
+   * @returns Observable emitting the updated shopping list
+   */
+  updateItemStatus(
+    listId: string,
+    itemId: string,
+    status: 'pending' | 'in_cart'
+  ): Observable<ShoppingList> {
+    return this.http
+      .patch<ApiEnvelope<{ list: ShoppingList }>>(
+        `${this.baseUrl}${listId}/items/${itemId}/status`,
+        { status },
+        {
+          withCredentials: true,
+        }
+      )
+      .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
+  }
+
+  /**
    * Marks a shopping list as completed.
    * @param id Shopping list ID
    * @returns Observable emitting the updated shopping list

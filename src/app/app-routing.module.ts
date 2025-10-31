@@ -26,6 +26,13 @@ const routes: Routes = [
       ),
   },
   {
+    path: 'shopping-lists/:id',
+    loadChildren: () =>
+      import('./pages/shopping-list-detail/shopping-list-detail-routing.module').then(
+        (m) => m.ShoppingListDetailPageRoutingModule
+      ),
+  },
+  {
     path: 'products',
     loadChildren: () =>
       import('./pages/products/products-routing.module').then(

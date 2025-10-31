@@ -13,6 +13,11 @@
 export type ShoppingListStatus = 'active' | 'completed' | 'archived';
 
 /**
+ * Status values for a shopping list item
+ */
+export type ShoppingListItemStatus = 'pending' | 'in_cart';
+
+/**
  * Represents an item within a shopping list
  */
 export interface ShoppingListItem {
@@ -33,6 +38,9 @@ export interface ShoppingListItem {
 
   /** Optional notes or preferences for this item */
   comment?: string;
+
+  /** Current status of the item */
+  status: ShoppingListItemStatus;
 
   /** Timestamp when the item was added to the list */
   addedAt: Date | string;
@@ -184,6 +192,7 @@ export interface UpdateItemInput {
   quantity?: number;
   quantityUnit?: string;
   comment?: string;
+  status?: ShoppingListItemStatus;
 }
 
 /**

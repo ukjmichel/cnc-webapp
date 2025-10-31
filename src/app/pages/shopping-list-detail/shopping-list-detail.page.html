@@ -1,0 +1,188 @@
+<ion-content [fullscreen]="true">
+  <div class="shopping-list-detail-page">
+    <!-- Error Message -->
+    <div class="error-message" *ngIf="error()">
+      <span class="error-icon">⚠️</span>
+      {{ error() }}
+      <button class="btn btn-primary" (click)="goBack()">
+        Go Back
+      </button>
+    </div>
+
+    <!-- Loading State -->
+    <div class="loading-container" *ngIf="isLoading()">
+      <div class="spinner"></div>
+      <p>Loading shopping list...</p>
+    </div>
+
+    <!-- Shopping List Details -->
+    <div class="list-detail-container" *ngIf="!isLoading() && shoppingList()">
+      <!-- Header -->
+      <div class="detail-header">
+        <button class="btn-back" (click)="goBack()">
+          <span class="icon">←</span>
+          Back
+        </button>
+
+        <div class="header-content">
+          <h1>{{ shoppingList()!.title }}</h1>
+          <span class="status-badge" [ngClass]="getStatusClass(shoppingList()!.status)">
+            {{ shoppingList()!.status }}
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <button
+            class="btn btn-secondary"
+            *ngIf="shoppingList()!.status !== 'completed'"
+            (click)="markAsCompleted()"
+          >
+            ✓ Mark Complete
+          </button>
+          <button
+            class="btn btn-secondary"
+            *ngIf="shoppingList()!.status === 'completed' || shoppingList()!.status === 'archived'"
+            (click)="markAsActive()"
+          >
+            ↻ Reactivate
+          </button>
+          <button
+            class="btn btn-outline"
+            *ngIf="shoppingList()!.status !== 'archived'"
+            (click)="markAsArchived()"
+          >
+            📁 Archive
+          </button>
+        </div>
+      </div>
+
+      <!-- Comment Section -->
+      <div class="comment-section" *ngIf="shoppingList()!.comment">
+        <div class="comment-label">Notes:</div>
+        <div class="comment-text">{{ shoppingList()!.comment }}</div>
+      </div>
+
+      <!-- Statistics Cards -->
+      <div class="stats-container">
+        <div class="stat-card">
+          <div class="stat-value">{{ shoppingList()!.items.length }}</div>
+          <div class="stat-label">Total Items</div>
+        </div>
+        <div class="stat-card stat-pending">
+          <div class="stat-value">{{ getItemCountByStatus('pending') }}</div>
+          <div class="stat-label">Pending</div>
+        </div>
+        <div class="stat-card stat-in-cart">
+          <div class="stat-value">{{ getItemCountByStatus('in_cart') }}</div>
+          <div class="stat-label">In Cart</div>
+        </div>
+        <div class="stat-card stat-progress">
+          <div class="stat-value">{{ getCompletionPercentage() }}%</div>
+          <div class="stat-label">Progress</div>
+        </div>
+      </div>
+
+      <!-- Progress Bar -->
+      <div class="progress-bar-container">
+        <div class="progress-bar">
+          <div
+            class="progress-fill"
+            [style.width.%]="getCompletionPercentage()"
+          ></div>
+        </div>
+      </div>
+
+      <!-- Items List -->
+      <div class="items-section">
+        <h2 class="section-title">Items</h2>
+
+        <div class="items-list" *ngIf="shoppingList()!.items.length > 0">
+          <div
+            class="item-card"
+            *ngFor="let item of shoppingList()!.items"
+            [ngClass]="{
+              'item-completed': item.status === 'in_cart',
+              'item-pending': item.status === 'pending'
+            }"
+          >
+            <div class="item-checkbox">
+              <label class="checkbox-container">
+                <input
+                  type="checkbox"
+                  [checked]="item.status === 'in_cart'"
+                  (change)="toggleItemStatus(item, $event)"
+                />
+                <span class="checkmark"></span>
+              </label>
+            </div>
+
+            <div class="item-content">
+              <div class="item-header">
+                <h3 class="item-name" [class.strikethrough]="item.status === 'in_cart'">
+                  {{ item.productName }}
+                </h3>
+                <span class="item-status-badge" [ngClass]="getItemStatusClass(item.status)">
+                  {{ item.status === 'pending' ? 'Pending' : 'In Cart' }}
+                </span>
+              </div>
+
+              <div class="item-details">
+                <div class="item-quantity">
+                  <span class="icon">📦</span>
+                  <span>{{ item.quantity }} {{ item.quantityUnit || 'units' }}</span>
+                </div>
+                <div class="item-id">
+                  <span class="icon">🏷️</span>
+                  <span>{{ item.productId }}</span>
+                </div>
+              </div>
+
+              <div class="item-comment" *ngIf="item.comment">
+                <span class="icon">💬</span>
+                <span>{{ item.comment }}</span>
+              </div>
+
+              <div class="item-date">
+                <span class="icon">📅</span>
+                <span>Added {{ formatDate(item.addedAt) }}</span>
+              </div>
+            </div>
+
+            <div class="item-actions">
+              <button
+                class="btn-icon btn-danger"
+                (click)="removeItem(item._id, $event)"
+                title="Remove Item"
+              >
+                🗑️
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-items" *ngIf="shoppingList()!.items.length === 0">
+          <div class="empty-icon">📦</div>
+          <h3>No Items Yet</h3>
+          <p>Add items to your shopping list to get started!</p>
+        </div>
+      </div>
+
+      <!-- List Metadata -->
+      <div class="metadata-section">
+        <div class="metadata-item">
+          <span class="metadata-label">Created:</span>
+          <span class="metadata-value">{{ formatDate(shoppingList()!.createdAt) }}</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-label">Last Updated:</span>
+          <span class="metadata-value">{{ formatDate(shoppingList()!.updatedAt) }}</span>
+        </div>
+        <div class="metadata-item">
+          <span class="metadata-label">User ID:</span>
+          <span class="metadata-value">{{ shoppingList()!.userId }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</ion-content>
