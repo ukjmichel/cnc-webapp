@@ -368,16 +368,6 @@ export class NewProductPage implements OnInit {
       this.barcodeError.set(null);
       this.barcodeSuccess.set(null);
 
-      // Check if we're running in a web browser
-      const isWeb = !('Capacitor' in window) || (window as any).Capacitor?.getPlatform() === 'web';
-
-      if (isWeb) {
-        this.barcodeError.set(
-          'Camera scanning is only available on mobile devices. Please build the app for iOS/Android or enter the barcode manually below.'
-        );
-        return;
-      }
-
       // Check if the plugin is available
       if (typeof BarcodeScanner === 'undefined') {
         this.barcodeError.set(
@@ -386,11 +376,28 @@ export class NewProductPage implements OnInit {
         return;
       }
 
+      // Check if we're running in a web browser
+      const isWeb = !('Capacitor' in window) || (window as any).Capacitor?.getPlatform() === 'web';
+
+      if (isWeb) {
+        // For web browsers, check if camera is supported
+        // The plugin will use the browser's getUserMedia API
+        console.log('Running in web browser - attempting to use browser camera API');
+
+        // Check if HTTPS or localhost (required for camera access in browsers)
+        if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+          this.barcodeError.set(
+            'Camera access requires HTTPS or localhost. Please use: npm start -- --ssl or run on a mobile device.'
+          );
+          return;
+        }
+      }
+
       // Check and request camera permissions
       const { camera } = await BarcodeScanner.checkPermissions();
 
       if (camera === 'denied') {
-        this.barcodeError.set('Camera permission denied. Please enable camera access in your device settings or enter the barcode manually.');
+        this.barcodeError.set('Camera permission denied. Please enable camera access in your browser settings or enter the barcode manually.');
         return;
       }
 
@@ -433,7 +440,14 @@ export class NewProductPage implements OnInit {
 
       if (err.message?.includes('not available') || err.message?.includes('not implemented')) {
         this.barcodeError.set(
-          'Camera scanning is not available in the web browser. Please enter the barcode manually or run the app on a mobile device.'
+          'Camera scanning is not supported in your browser. Please use Chrome/Edge on desktop, or run the app on a mobile device. You can enter the barcode manually below.'
+        );
+        return;
+      }
+
+      if (err.message?.includes('permission') || err.message?.includes('NotAllowedError')) {
+        this.barcodeError.set(
+          'Camera permission denied. Please allow camera access in your browser settings or enter the barcode manually.'
         );
         return;
       }

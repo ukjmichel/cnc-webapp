@@ -6,13 +6,16 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "start:ssl": "ng serve --ssl",
+    "start:camera": "ng serve --ssl --host=localhost --port=8100",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
     "lint": "ng lint",
     "server": "ts-node --esm --project tsconfig.server.json server/index.ts",
     "server:dev": "nodemon --watch server --watch src/controllers --watch src/routes --watch src/services --watch src/middlewares --exec ts-node --esm --project tsconfig.server.json server/index.ts",
-    "start:all": "concurrently \"npm run server:dev\" \"npm start\""
+    "start:all": "concurrently \"npm run server:dev\" \"npm start\"",
+    "start:all:camera": "concurrently \"npm run server:dev\" \"npm run start:camera\""
   },
   "type": "module",
   "private": true,

@@ -77,9 +77,97 @@ The ML Kit barcode scanner supports:
 - PDF417
 - Aztec
 
-## Testing in Browser
+## Testing in Browser (Development Mode)
 
-**Note**: Camera scanning only works on physical devices or emulators. In the browser (during `npm start`), you can still test the barcode lookup feature by manually entering a barcode.
+### Web Browser Camera Support
+
+Camera scanning now works in web browsers during development! This allows you to test the camera functionality without deploying to a mobile device.
+
+#### Quick Start for Camera Development:
+
+```bash
+# Option 1: Start with HTTPS (recommended for camera testing)
+npm run start:camera
+
+# Option 2: Start both backend and frontend with camera support
+npm run start:all:camera
+
+# Option 3: Manual HTTPS start
+npm start -- --ssl
+```
+
+#### Requirements for Web Browser Camera:
+
+1. **HTTPS or localhost**: Browsers require secure context for camera access
+   - The `start:camera` script automatically enables SSL
+   - Angular CLI generates self-signed certificates automatically
+   - You may see a security warning - click "Advanced" and proceed
+
+2. **Supported Browsers**:
+   - ✅ Chrome/Chromium (recommended)
+   - ✅ Microsoft Edge
+   - ✅ Firefox (may have limited support)
+   - ❌ Safari (limited WebRTC support)
+
+3. **Camera Permissions**:
+   - Your browser will prompt for camera permission
+   - Click "Allow" when prompted
+   - If denied, you can reset permissions in browser settings
+
+#### Troubleshooting Web Camera:
+
+**"Camera access requires HTTPS or localhost"**
+- Use `npm run start:camera` instead of `npm start`
+- Or manually add `--ssl` flag: `npm start -- --ssl`
+
+**"Camera permission denied"**
+- Check your browser's site settings
+- Reset camera permissions for `https://localhost:8100`
+- Make sure no other app is using the camera
+
+**"Camera scanning is not supported in your browser"**
+- Try Chrome or Edge browser
+- Update your browser to the latest version
+- Check if your browser supports WebRTC
+
+**Certificate/Security Warnings**
+- This is normal with self-signed certificates in development
+- Click "Advanced" → "Proceed to localhost (unsafe)"
+- Or generate trusted certificates (see below)
+
+### Alternative: Using Physical Devices
+
+If you prefer testing on actual devices, or if web camera doesn't work:
+
+```bash
+# Build and sync to mobile platforms
+npm run build
+npx cap sync
+
+# Open in IDE
+npx cap open ios    # for iOS
+npx cap open android # for Android
+```
+
+### Generating Trusted SSL Certificates (Optional)
+
+For a better development experience without security warnings:
+
+```bash
+# Install mkcert (one-time setup)
+# macOS
+brew install mkcert
+brew install nss # for Firefox
+
+# Install local CA
+mkcert -install
+
+# Generate certificates for localhost
+mkcert localhost 127.0.0.1 ::1
+
+# Use certificates with Angular
+ng serve --ssl --ssl-cert localhost+2.pem --ssl-key localhost+2-key.pem
+```
 
 ## Troubleshooting
 
