@@ -69,7 +69,6 @@ export class ShoppingListService {
   createShoppingList(input: CreateShoppingListInput): Observable<ShoppingList> {
     return this.http
       .post<ApiEnvelope<{ list: ShoppingList }>>(this.baseUrl, input, {
-        withCredentials: true,
       })
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
   }
@@ -96,7 +95,6 @@ export class ShoppingListService {
     const obs = this.http
       .get<PaginatedResponse<ShoppingList>>(this.baseUrl, {
         params,
-        withCredentials: true,
       })
       .pipe(
         map((res) => {
@@ -127,7 +125,6 @@ export class ShoppingListService {
         `${this.baseUrl}user/${userId}`,
         {
           params,
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ lists: ShoppingList[] }>(res).lists));
@@ -144,7 +141,6 @@ export class ShoppingListService {
       .get<ApiEnvelope<{ lists: ShoppingList[] }>>(
         `${this.baseUrl}user/${userId}/active`,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ lists: ShoppingList[] }>(res).lists));
@@ -164,7 +160,6 @@ export class ShoppingListService {
       .get<ApiEnvelope<{ stats: ShoppingListStats }>>(
         `${this.baseUrl}user/${userId}/stats`,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ stats: ShoppingListStats }>(res).stats));
@@ -182,7 +177,6 @@ export class ShoppingListService {
   getById(id: string): Observable<ShoppingList> {
     const obs = this.http
       .get<ApiEnvelope<{ list: ShoppingList }>>(`${this.baseUrl}${id}`, {
-        withCredentials: true,
       })
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
 
@@ -205,7 +199,6 @@ export class ShoppingListService {
         `${this.baseUrl}${id}`,
         input,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -219,7 +212,6 @@ export class ShoppingListService {
   deleteShoppingList(id: string): Observable<boolean> {
     return this.http
       .delete<ApiEnvelope<{ success: boolean }>>(`${this.baseUrl}${id}`, {
-        withCredentials: true,
       })
       .pipe(map((res) => this.unwrap<{ success: boolean }>(res).success));
   }
@@ -236,7 +228,6 @@ export class ShoppingListService {
         `${this.baseUrl}${listId}/items`,
         item,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -253,7 +244,6 @@ export class ShoppingListService {
       .delete<ApiEnvelope<{ list: ShoppingList }>>(
         `${this.baseUrl}${listId}/items/${itemId}`,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -276,7 +266,6 @@ export class ShoppingListService {
         `${this.baseUrl}${listId}/items/${itemId}`,
         updates,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -299,7 +288,6 @@ export class ShoppingListService {
         `${this.baseUrl}${listId}/items/${itemId}/status`,
         { status },
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -316,7 +304,6 @@ export class ShoppingListService {
         `${this.baseUrl}${id}/complete`,
         {},
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -333,7 +320,6 @@ export class ShoppingListService {
         `${this.baseUrl}${id}/archive`,
         {},
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -350,7 +336,6 @@ export class ShoppingListService {
         `${this.baseUrl}${id}/activate`,
         {},
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));
@@ -371,7 +356,6 @@ export class ShoppingListService {
         `${this.baseUrl}${id}/duplicate`,
         input,
         {
-          withCredentials: true,
         }
       )
       .pipe(map((res) => this.unwrap<{ list: ShoppingList }>(res).list));

@@ -36,12 +36,9 @@ export class BarcodeService {
     console.log('[BarcodeService] getItemByCode called');
     console.log('[BarcodeService] - API Base URL:', this.baseUrl);
     console.log('[BarcodeService] - Full URL:', url);
-    console.log('[BarcodeService] - With Credentials: true');
     console.log('[BarcodeService] - Making HTTP GET request...');
 
-    return this.http.get<CombinedBarcodeResponse>(url, {
-      withCredentials: true,
-    });
+    return this.http.get<CombinedBarcodeResponse>(url);
   }
 
   /**
@@ -52,10 +49,7 @@ export class BarcodeService {
   getBatchItems(codes: string[]): Observable<BatchBarcodeResponse> {
     return this.http.post<BatchBarcodeResponse>(
       `${this.baseUrl}batch`,
-      { codes },
-      {
-        withCredentials: true,
-      }
+      { codes }
     );
   }
 
@@ -73,7 +67,6 @@ export class BarcodeService {
 
     return this.http.get<any>(`${this.baseUrl}${code}/food`, {
       params,
-      withCredentials: true,
     });
   }
 
@@ -91,7 +84,6 @@ export class BarcodeService {
 
     return this.http.get<any>(`${this.baseUrl}${code}/retail`, {
       params,
-      withCredentials: true,
     });
   }
 }

@@ -50,7 +50,6 @@ export class ProductService {
   createProduct(input: CreateProductInput): Observable<Product> {
     return this.http
       .post<ProductResponse>(this.baseUrl, input, {
-        withCredentials: true,
       })
       .pipe(map((res) => res.data.product));
   }
@@ -85,7 +84,6 @@ export class ProductService {
     return this.http
       .get<PaginatedProductResponse>(this.baseUrl, {
         params: httpParams,
-        withCredentials: true,
       })
       .pipe(
         map((res) => {
@@ -131,7 +129,6 @@ export class ProductService {
     return this.http
       .get<PaginatedProductResponse>(`${this.baseUrl}filter`, {
         params: httpParams,
-        withCredentials: true,
       })
       .pipe(
         map((res) => {
@@ -155,7 +152,6 @@ export class ProductService {
     const obs = this.http
       .get<ProductResponse>(`${this.baseUrl}by-code`, {
         params,
-        withCredentials: true,
       })
       .pipe(map((res) => res.data.product));
 
@@ -172,7 +168,6 @@ export class ProductService {
   getById(id: string): Observable<Product> {
     const obs = this.http
       .get<ProductResponse>(`${this.baseUrl}${id}`, {
-        withCredentials: true,
       })
       .pipe(map((res) => res.data.product));
 
@@ -189,7 +184,6 @@ export class ProductService {
   updateProduct(id: string, input: UpdateProductInput): Observable<Product> {
     return this.http
       .patch<ProductResponse>(`${this.baseUrl}${id}`, input, {
-        withCredentials: true,
       })
       .pipe(map((res) => res.data.product));
   }
@@ -202,7 +196,6 @@ export class ProductService {
   deleteProduct(id: string): Observable<boolean> {
     return this.http
       .delete<SuccessResponse>(`${this.baseUrl}${id}`, {
-        withCredentials: true,
       })
       .pipe(map((res) => res.data.success));
   }
