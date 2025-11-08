@@ -22,8 +22,12 @@ app.use(cors({
   origin: [
     'http://localhost:8100',
     'https://localhost:8100',  // For SSL camera development
+    'http://127.0.0.1:8100',
+    'https://127.0.0.1:8100',  // For SSL camera development
     'http://localhost:4200',
     'https://localhost:4200',  // For SSL camera development
+    'http://127.0.0.1:4200',
+    'https://127.0.0.1:4200',  // For SSL camera development
   ],
   credentials: true,
 }));

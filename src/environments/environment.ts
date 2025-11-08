@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,  // Changed to false for development
-  apiUrl: 'http://localhost:3000/',  // Update this if your API is deployed elsewhere
+  apiUrl: 'http://127.0.0.1:3000/',  // Update this if your API is deployed elsewhere
   // For deployed API, use something like: 'https://your-api.herokuapp.com/'
 };
 
