@@ -3,8 +3,9 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: true,
-  apiUrl: 'http://localhost:3000/',
+  production: false,  // Changed to false for development
+  apiUrl: 'http://localhost:3000/',  // Update this if your API is deployed elsewhere
+  // For deployed API, use something like: 'https://your-api.herokuapp.com/'
 };
 
 /*
