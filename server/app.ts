@@ -12,6 +12,7 @@ import express from 'express';
 import type { Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import barcodeRoutes from '../src/routes/barcode.routes.ts';
+import userRoutes from '../src/routes/user.routes.ts';
 import { CustomError } from '../src/errors/index.ts';
 
 const app = express();
@@ -49,6 +50,7 @@ app.get('/health', (req: Request, res: Response) => {
 
 // API Routes
 app.use('/api/barcode', barcodeRoutes);
+app.use('/api/users', userRoutes);
 
 // 404 handler
 app.use((req: Request, res: Response) => {
