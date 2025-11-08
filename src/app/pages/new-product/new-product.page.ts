@@ -5,7 +5,7 @@
  * --------------------------------------------------------------------------
  */
 
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, OnInit, OnDestroy, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import {
   FormBuilder,
@@ -20,6 +20,7 @@ import { BarcodeService } from '../../services/barcode.service';
 import { CreateProductInput } from '../../models/product.model';
 import { CombinedBarcodeResponse } from '../../models/barcode.model';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
+import { Html5Qrcode } from 'html5-qrcode';
 
 @Component({
   selector: 'app-new-product',
@@ -28,7 +29,7 @@ import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
   templateUrl: './new-product.page.html',
   styleUrls: ['./new-product.page.scss'],
 })
-export class NewProductPage implements OnInit {
+export class NewProductPage implements OnInit, OnDestroy {
   productForm!: FormGroup;
   isSubmitting = signal<boolean>(false);
   error = signal<string | null>(null);
@@ -40,6 +41,10 @@ export class NewProductPage implements OnInit {
   barcodeError = signal<string | null>(null);
   barcodeSuccess = signal<string | null>(null);
 
+  // Web scanner properties
+  showWebScanner = signal<boolean>(false);
+  private html5QrCode: Html5Qrcode | null = null;
+
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
@@ -49,6 +54,11 @@ export class NewProductPage implements OnInit {
 
   ngOnInit(): void {
     this.initializeForm();
+  }
+
+  ngOnDestroy(): void {
+    // Clean up web scanner if it's running
+    this.stopWebScanner();
   }
 
   /**
@@ -368,6 +378,16 @@ export class NewProductPage implements OnInit {
       this.barcodeError.set(null);
       this.barcodeSuccess.set(null);
 
+      // Check if we're running in a web browser
+      const isWeb = !('Capacitor' in window) || (window as any).Capacitor?.getPlatform() === 'web';
+
+      if (isWeb) {
+        // Use HTML5 QR Code scanner for web browsers
+        this.startWebScanner();
+        return;
+      }
+
+      // Native mobile app - use ML Kit scanner
       // Check if the plugin is available
       if (typeof BarcodeScanner === 'undefined') {
         this.barcodeError.set(
@@ -376,28 +396,11 @@ export class NewProductPage implements OnInit {
         return;
       }
 
-      // Check if we're running in a web browser
-      const isWeb = !('Capacitor' in window) || (window as any).Capacitor?.getPlatform() === 'web';
-
-      if (isWeb) {
-        // For web browsers, check if camera is supported
-        // The plugin will use the browser's getUserMedia API
-        console.log('Running in web browser - attempting to use browser camera API');
-
-        // Check if HTTPS or localhost (required for camera access in browsers)
-        if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
-          this.barcodeError.set(
-            'Camera access requires HTTPS or localhost. Please use: npm start -- --ssl or run on a mobile device.'
-          );
-          return;
-        }
-      }
-
       // Check and request camera permissions
       const { camera } = await BarcodeScanner.checkPermissions();
 
       if (camera === 'denied') {
-        this.barcodeError.set('Camera permission denied. Please enable camera access in your browser settings or enter the barcode manually.');
+        this.barcodeError.set('Camera permission denied. Please enable camera access in your device settings or enter the barcode manually.');
         return;
       }
 
@@ -438,21 +441,112 @@ export class NewProductPage implements OnInit {
         return;
       }
 
-      if (err.message?.includes('not available') || err.message?.includes('not implemented')) {
-        this.barcodeError.set(
-          'Camera scanning is not supported in your browser. Please use Chrome/Edge on desktop, or run the app on a mobile device. You can enter the barcode manually below.'
-        );
-        return;
-      }
-
-      if (err.message?.includes('permission') || err.message?.includes('NotAllowedError')) {
-        this.barcodeError.set(
-          'Camera permission denied. Please allow camera access in your browser settings or enter the barcode manually.'
-        );
-        return;
-      }
-
       this.barcodeError.set('Failed to scan barcode. Please try again or enter manually.');
+    }
+  }
+
+  /**
+   * Start web-based barcode scanner (for browsers)
+   */
+  async startWebScanner(): Promise<void> {
+    try {
+      // Check if HTTPS or localhost (required for camera access in browsers)
+      if (window.location.protocol !== 'https:' && !window.location.hostname.includes('localhost')) {
+        this.barcodeError.set(
+          'Camera access requires HTTPS or localhost. Please use: npm run start:camera'
+        );
+        return;
+      }
+
+      // Show the scanner modal
+      this.showWebScanner.set(true);
+
+      // Wait for the DOM to render the scanner element
+      setTimeout(async () => {
+        try {
+          this.html5QrCode = new Html5Qrcode('web-qr-reader');
+
+          // Start the scanner
+          await this.html5QrCode.start(
+            { facingMode: 'environment' }, // Use back camera
+            {
+              fps: 10, // Frames per second
+              qrbox: { width: 250, height: 250 }, // Scanning box size
+              formatsToSupport: [
+                // Barcode formats
+                0, // QR_CODE
+                5, // EAN_8
+                6, // EAN_13
+                7, // UPC_A
+                8, // UPC_E
+                9, // CODE_39
+                10, // CODE_93
+                11, // CODE_128
+                12, // ITF
+                13, // CODABAR
+              ],
+            },
+            (decodedText, decodedResult) => {
+              // Success callback - barcode detected
+              console.log('Barcode detected:', decodedText);
+
+              // Set the barcode value
+              this.barcodeInput.set(decodedText);
+              this.barcodeSuccess.set(`Barcode detected: ${decodedText}`);
+
+              // Stop the scanner
+              this.stopWebScanner();
+
+              // Automatically trigger lookup after a short delay
+              setTimeout(() => {
+                this.onBarcodeLookup();
+              }, 500);
+            },
+            (errorMessage) => {
+              // Error callback - usually just "No barcode found"
+              // We can ignore this as it's called continuously when no barcode is found
+            }
+          );
+        } catch (err: any) {
+          console.error('Error starting web scanner:', err);
+          this.showWebScanner.set(false);
+
+          if (err.message?.includes('NotAllowedError') || err.message?.includes('Permission')) {
+            this.barcodeError.set(
+              'Camera permission denied. Please allow camera access in your browser settings.'
+            );
+          } else if (err.message?.includes('NotFoundError')) {
+            this.barcodeError.set(
+              'No camera found on your device. Please use a device with a camera or enter the barcode manually.'
+            );
+          } else {
+            this.barcodeError.set(
+              'Failed to start camera. Please check permissions and try again, or enter the barcode manually.'
+            );
+          }
+        }
+      }, 100);
+    } catch (err: any) {
+      console.error('Error initializing web scanner:', err);
+      this.showWebScanner.set(false);
+      this.barcodeError.set('Failed to initialize camera scanner. Please enter the barcode manually.');
+    }
+  }
+
+  /**
+   * Stop web-based barcode scanner
+   */
+  async stopWebScanner(): Promise<void> {
+    try {
+      if (this.html5QrCode) {
+        await this.html5QrCode.stop();
+        this.html5QrCode.clear();
+        this.html5QrCode = null;
+      }
+    } catch (err) {
+      console.error('Error stopping web scanner:', err);
+    } finally {
+      this.showWebScanner.set(false);
     }
   }
 }

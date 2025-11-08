@@ -92,16 +92,19 @@ npm run start:camera
 # Option 2: Start both backend and frontend with camera support
 npm run start:all:camera
 
-# Option 3: Manual HTTPS start
-npm start -- --ssl
+# Option 3: Use Ionic CLI directly
+ionic serve --ssl
 ```
+
+The app uses **`ionic serve`** which provides a better development experience than `ng serve` and automatically opens your browser.
 
 #### Requirements for Web Browser Camera:
 
 1. **HTTPS or localhost**: Browsers require secure context for camera access
-   - The `start:camera` script automatically enables SSL
-   - Angular CLI generates self-signed certificates automatically
+   - The `start:camera` script uses `ionic serve --ssl`
+   - Ionic CLI generates self-signed certificates automatically
    - You may see a security warning - click "Advanced" and proceed
+   - Uses `html5-qrcode` library for web camera scanning
 
 2. **Supported Browsers**:
    - ✅ Chrome/Chromium (recommended)
@@ -118,7 +121,7 @@ npm start -- --ssl
 
 **"Camera access requires HTTPS or localhost"**
 - Use `npm run start:camera` instead of `npm start`
-- Or manually add `--ssl` flag: `npm start -- --ssl`
+- Or manually add `--ssl` flag: `ionic serve --ssl`
 
 **"Camera permission denied"**
 - Check your browser's site settings

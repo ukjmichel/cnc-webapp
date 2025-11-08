@@ -125,6 +125,28 @@
       </ion-card-content>
     </ion-card>
 
+    <!-- Web Camera Scanner Modal (for browsers) -->
+    <div *ngIf="showWebScanner()" class="web-scanner-modal">
+      <div class="web-scanner-container">
+        <div class="web-scanner-header">
+          <h3>Scan Barcode</h3>
+          <ion-button fill="clear" (click)="stopWebScanner()">
+            <ion-icon name="close" slot="icon-only"></ion-icon>
+          </ion-button>
+        </div>
+        <div id="web-qr-reader" class="web-scanner-viewport"></div>
+        <div class="web-scanner-footer">
+          <ion-note>
+            <ion-icon name="information-circle-outline"></ion-icon>
+            Point your camera at a barcode to scan
+          </ion-note>
+          <ion-button expand="block" fill="outline" (click)="stopWebScanner()">
+            Cancel
+          </ion-button>
+        </div>
+      </div>
+    </div>
+
     <!-- Form -->
     <form [formGroup]="productForm" (ngSubmit)="onSubmit()">
 

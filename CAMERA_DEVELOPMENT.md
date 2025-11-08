@@ -5,14 +5,17 @@
 To use the camera in development mode on your web browser:
 
 ```bash
-# Start frontend with HTTPS (required for camera)
+# Start frontend with camera support (using Ionic serve with SSL)
 npm run start:camera
 
 # Or start both backend and frontend together
 npm run start:all:camera
+
+# Alternative: Use Ionic CLI directly
+ionic serve --ssl
 ```
 
-Then open your browser to **https://localhost:8100** (note: HTTPS, not HTTP)
+Ionic will automatically open your browser to **https://localhost:8100** (note: HTTPS, not HTTP)
 
 ## Why HTTPS?
 
@@ -41,35 +44,50 @@ When using `npm run start:camera`, you'll see a security warning because Angular
 
 The following changes enable camera in development:
 
-### 1. Capacitor Configuration (`capacitor.config.ts`)
+### 1. Web Scanner Library (`html5-qrcode`)
+- Installed `html5-qrcode` for browser-based camera scanning
+- Works with any modern browser that supports WebRTC
+- Provides a fallback when ML Kit (mobile-only) isn't available
+
+### 2. Capacitor Configuration (`capacitor.config.ts`)
 - Added server configuration for localhost
-- Enabled BarcodeScanner plugin for web
+- Enabled BarcodeScanner plugin configuration
 
-### 2. Application Code (`src/app/pages/new-product/new-product.page.ts`)
-- Removed web browser blocking
-- Added HTTPS/localhost validation
-- Enhanced error messages for browser compatibility
+### 3. Application Code (`src/app/pages/new-product/new-product.page.ts`)
+- Detects web vs mobile environment
+- Uses `html5-qrcode` for web browsers
+- Uses ML Kit BarcodeScanner for native mobile apps
+- Added modal UI for web camera scanner
+- Enhanced error handling for both platforms
 
-### 3. NPM Scripts (`package.json`)
-- `start:camera` - Start with HTTPS for camera support
+### 4. NPM Scripts (`package.json`)
+- Updated to use `ionic serve` instead of `ng serve`
+- `start` - Standard Ionic serve
+- `start:camera` - Ionic serve with SSL for camera support
 - `start:all:camera` - Start backend + frontend with camera support
+- Installed `@ionic/cli` as dev dependency
 
 ## Development Workflow
 
 ### For Camera Testing:
 ```bash
+# Option 1: Start both backend and frontend with camera support
+npm run start:all:camera
+
+# Option 2: Start services separately
 # Terminal 1: Start backend
 npm run server:dev
 
 # Terminal 2: Start frontend with camera support
 npm run start:camera
-
-# Or use a single command:
-npm run start:all:camera
 ```
 
 ### For Regular Development (no camera):
 ```bash
+# Start without SSL (camera won't work)
+npm start
+
+# Or start both backend and frontend
 npm run start:all
 ```
 
