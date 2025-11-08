@@ -10,16 +10,28 @@ import * as AuthActions from './auth.actions';
 /**
  * Auth Guard with token validation
  *
- * Logic:
+ * DEVELOPMENT MODE: Set ENABLE_AUTH_GUARD = true to enable authentication
+ *
+ * Logic when enabled:
  * 1. Check if user is logged in from cached state
  * 2. If logged in, verify token is still valid via /api/users/me request
  * 3. If token valid, allow access
  * 4. If token invalid or user not logged in, redirect to login
  */
+
+// Toggle this to enable/disable authentication during development
+const ENABLE_AUTH_GUARD = false;
+
 export const authGuard = () => {
   const authFacade = inject(AuthFacade);
   const router = inject(Router);
   const store = inject(Store);
+
+  // DEVELOPMENT: Skip auth check
+  if (!ENABLE_AUTH_GUARD) {
+    console.log('[Auth Guard] DEVELOPMENT MODE - Auth disabled, allowing access');
+    return true;
+  }
 
   // Check cached state first
   const isLogged = authFacade.isLogged();
