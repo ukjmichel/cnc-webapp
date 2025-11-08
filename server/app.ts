@@ -36,10 +36,22 @@ app.use(express.urlencoded({ extended: true }));
 
 // Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`\n${new Date().toISOString()} - ${req.method} ${req.path}`);
   console.log(`  Origin: ${req.headers.origin || 'none'}`);
   console.log(`  Credentials: ${req.headers.cookie ? 'present' : 'none'}`);
   console.log(`  Authorization: ${req.headers.authorization ? 'present' : 'none'}`);
+  console.log(`  User-Agent: ${req.headers['user-agent']?.substring(0, 50) || 'none'}`);
+
+  // Log response status after it's sent
+  const originalSend = res.send;
+  res.send = function(data) {
+    console.log(`  --> Response Status: ${res.statusCode}`);
+    if (res.statusCode >= 400) {
+      console.log(`  --> Response Body: ${typeof data === 'string' ? data : JSON.stringify(data)}`);
+    }
+    return originalSend.call(this, data);
+  };
+
   next();
 });
 
