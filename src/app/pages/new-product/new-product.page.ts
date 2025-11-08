@@ -249,6 +249,8 @@ export class NewProductPage implements OnInit, OnDestroy {
   onBarcodeLookup(): void {
     const barcode = this.barcodeInput().trim();
 
+    console.log('[Barcode Lookup] Starting lookup for barcode:', barcode);
+
     if (!barcode) {
       this.barcodeError.set('Please enter a barcode');
       return;
@@ -258,8 +260,11 @@ export class NewProductPage implements OnInit, OnDestroy {
     this.barcodeError.set(null);
     this.barcodeSuccess.set(null);
 
+    console.log('[Barcode Lookup] Calling barcodeService.getItemByCode...');
+
     this.barcodeService.getItemByCode(barcode).subscribe({
       next: (response: CombinedBarcodeResponse) => {
+        console.log('[Barcode Lookup] SUCCESS - Response:', response);
         this.isLookingUpBarcode.set(false);
         this.prefillFormFromBarcodeData(response);
         this.barcodeSuccess.set('Product data loaded successfully!');
@@ -270,6 +275,12 @@ export class NewProductPage implements OnInit, OnDestroy {
         }, 3000);
       },
       error: (err) => {
+        console.error('[Barcode Lookup] ERROR - Full error object:', err);
+        console.error('[Barcode Lookup] ERROR - Status:', err.status);
+        console.error('[Barcode Lookup] ERROR - Status Text:', err.statusText);
+        console.error('[Barcode Lookup] ERROR - Error message:', err.error);
+        console.error('[Barcode Lookup] ERROR - URL:', err.url);
+
         this.isLookingUpBarcode.set(false);
 
         if (err.status === 404) {
@@ -277,12 +288,18 @@ export class NewProductPage implements OnInit, OnDestroy {
             'Product not found in barcode databases. You can still create it manually.'
           );
         } else if (err.status === 401) {
+          console.error('[Barcode Lookup] 401 UNAUTHORIZED - Backend requires authentication!');
           this.barcodeError.set('You must be logged in to lookup barcodes.');
         } else if (err.status === 403) {
+          console.error('[Barcode Lookup] 403 FORBIDDEN - Insufficient permissions!');
           this.barcodeError.set(
             'You do not have permission to lookup barcodes.'
           );
+        } else if (err.status === 0) {
+          console.error('[Barcode Lookup] CONNECTION ERROR - Backend not running or CORS issue!');
+          this.barcodeError.set('Cannot connect to backend. Make sure the API server is running on http://localhost:3000');
         } else {
+          console.error('[Barcode Lookup] UNKNOWN ERROR - Status:', err.status);
           this.barcodeError.set('Failed to lookup barcode. Please try again.');
         }
 

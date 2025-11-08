@@ -20,7 +20,11 @@ export class BarcodeService {
   /** Base URL for barcode endpoints */
   private baseUrl = `${environment.apiUrl}api/barcode/`;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) {
+    console.log('[BarcodeService] Service initialized');
+    console.log('[BarcodeService] - Environment API URL:', environment.apiUrl);
+    console.log('[BarcodeService] - Base URL:', this.baseUrl);
+  }
 
   /**
    * Get combined product information by barcode from both OpenFoodFacts and UPCItemDB
@@ -28,7 +32,14 @@ export class BarcodeService {
    * @returns Observable emitting combined product data
    */
   getItemByCode(code: string): Observable<CombinedBarcodeResponse> {
-    return this.http.get<CombinedBarcodeResponse>(`${this.baseUrl}${code}`, {
+    const url = `${this.baseUrl}${code}`;
+    console.log('[BarcodeService] getItemByCode called');
+    console.log('[BarcodeService] - API Base URL:', this.baseUrl);
+    console.log('[BarcodeService] - Full URL:', url);
+    console.log('[BarcodeService] - With Credentials: true');
+    console.log('[BarcodeService] - Making HTTP GET request...');
+
+    return this.http.get<CombinedBarcodeResponse>(url, {
       withCredentials: true,
     });
   }
