@@ -18,7 +18,12 @@ const app = express();
 
 // Middleware
 app.use(cors({
-  origin: ['http://localhost:8100', 'http://localhost:4200'],
+  origin: [
+    'http://localhost:8100',
+    'https://localhost:8100',  // For SSL camera development
+    'http://localhost:4200',
+    'https://localhost:4200',  // For SSL camera development
+  ],
   credentials: true,
 }));
 app.use(express.json());
@@ -27,6 +32,9 @@ app.use(express.urlencoded({ extended: true }));
 // Request logging
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
+  console.log(`  Origin: ${req.headers.origin || 'none'}`);
+  console.log(`  Credentials: ${req.headers.cookie ? 'present' : 'none'}`);
+  console.log(`  Authorization: ${req.headers.authorization ? 'present' : 'none'}`);
   next();
 });
 
