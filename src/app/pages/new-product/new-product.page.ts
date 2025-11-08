@@ -20,7 +20,6 @@ import { BarcodeService } from '../../services/barcode.service';
 import { CreateProductInput } from '../../models/product.model';
 import { CombinedBarcodeResponse } from '../../models/barcode.model';
 import { BarcodeScanner } from '@capacitor-mlkit/barcode-scanning';
-import { Html5Qrcode } from 'html5-qrcode';
 
 @Component({
   selector: 'app-new-product',
@@ -43,7 +42,7 @@ export class NewProductPage implements OnInit, OnDestroy {
 
   // Web scanner properties
   showWebScanner = signal<boolean>(false);
-  private html5QrCode: Html5Qrcode | null = null;
+  private html5QrCode: any = null;
 
   constructor(
     private fb: FormBuilder,
@@ -464,7 +463,9 @@ export class NewProductPage implements OnInit, OnDestroy {
       // Wait for the DOM to render the scanner element
       setTimeout(async () => {
         try {
-          this.html5QrCode = new Html5Qrcode('web-qr-reader');
+          // Dynamically import Html5Qrcode to avoid build issues
+          const { Html5Qrcode: Html5QrcodeClass } = await import('html5-qrcode');
+          this.html5QrCode = new Html5QrcodeClass('web-qr-reader');
 
           // Start the scanner
           await this.html5QrCode.start(
@@ -486,7 +487,7 @@ export class NewProductPage implements OnInit, OnDestroy {
                 13, // CODABAR
               ],
             },
-            (decodedText, decodedResult) => {
+            (decodedText: string, decodedResult: any) => {
               // Success callback - barcode detected
               console.log('Barcode detected:', decodedText);
 
@@ -502,7 +503,7 @@ export class NewProductPage implements OnInit, OnDestroy {
                 this.onBarcodeLookup();
               }, 500);
             },
-            (errorMessage) => {
+            (errorMessage: string) => {
               // Error callback - usually just "No barcode found"
               // We can ignore this as it's called continuously when no barcode is found
             }
